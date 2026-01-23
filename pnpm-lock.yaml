@@ -14,6 +14,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.91.0
         version: 2.91.0
+      '@tanstack/solid-query':
+        specifier: ^5.90.23
+        version: 5.90.23(solid-js@1.9.10)
       '@tanstack/solid-router':
         specifier: ^1.120.1
         version: 1.154.9(solid-js@1.9.10)
@@ -23,6 +26,9 @@ importers:
       solid-js:
         specifier: ^1.9.9
         version: 1.9.10
+      temporal-polyfill:
+        specifier: ^0.3.0
+        version: 0.3.0
     devDependencies:
       '@tanstack/router-devtools':
         specifier: ^1.120.1
@@ -623,6 +629,9 @@ packages:
     resolution: {integrity: sha512-YBgwS9qG4rs1ZY/ZrhQtjOH8BG9Qa2wf2AsxT/SnZ4HZJ1DcCEqkoiHH0yH6CYvdDit31X5HokOqQrRSsZEwGA==}
     engines: {node: '>=12'}
 
+  '@tanstack/query-core@5.90.20':
+    resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
+
   '@tanstack/react-router-devtools@1.154.10':
     resolution: {integrity: sha512-+vf7qliy3w+gecbL+l83nAPa2iCRBN1AFpFyPGtv2PaL5fz1h+Z6dQKpaVBQZTz4//vdLlBnD0nu6ozn+HdKGQ==}
     engines: {node: '>=12'}
@@ -702,6 +711,11 @@ packages:
   '@tanstack/router-utils@1.154.7':
     resolution: {integrity: sha512-61bGx32tMKuEpVRseu2sh1KQe8CfB7793Mch/kyQt0EP3tD7X0sXmimCl3truRiDGUtI0CaSoQV1NPjAII1RBA==}
     engines: {node: '>=12'}
+
+  '@tanstack/solid-query@5.90.23':
+    resolution: {integrity: sha512-pbZc4+Kgm7ktzIuu01R3KOWfazQKgNp4AZvW0RSvv+sNMpYoileUDAkXEcjDJe6RJmb3fVvTR4LlcSL5pxDElQ==}
+    peerDependencies:
+      solid-js: ^1.6.0
 
   '@tanstack/solid-router@1.154.9':
     resolution: {integrity: sha512-3/umPn94ifatHobzNgQDOcm3GAF6Hury9gyiSG8DEa4EWvvdmA5Bu5gRe3+Mwh3gejMP8zlp7Y5gGxr5YlZhZA==}
@@ -1389,6 +1403,12 @@ packages:
     engines: {node: '>=18'}
     deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exhorbitant rates) by contacting i@izs.me
 
+  temporal-polyfill@0.3.0:
+    resolution: {integrity: sha512-qNsTkX9K8hi+FHDfHmf22e/OGuXmfBm9RqNismxBrnSmZVJKegQ+HYYXT+R7Ha8F/YSm2Y34vmzD4cxMu2u95g==}
+
+  temporal-spec@0.3.0:
+    resolution: {integrity: sha512-n+noVpIqz4hYgFSMOSiINNOUOMFtV5cZQNCmmszA6GiVFVRt3G7AqVyhXjhCSmowvQn+NsGn+jMDMKJYHd3bSQ==}
+
   thenify-all@1.6.0:
     resolution: {integrity: sha512-RNxQH/qI8/t3thXJDwcstUO4zeqo64+Uy/+sNVRBx4Xn2OX+OZ9oP+iJnNFqplFra2ZUVeKCSa2oVWi3T4uVmA==}
     engines: {node: '>=0.8'}
@@ -2026,6 +2046,8 @@ snapshots:
 
   '@tanstack/history@1.154.7': {}
 
+  '@tanstack/query-core@5.90.20': {}
+
   '@tanstack/react-router-devtools@1.154.10(@tanstack/react-router@1.154.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@tanstack/router-core@1.154.8)(csstype@3.2.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tanstack/react-router': 1.154.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2134,6 +2156,11 @@ snapshots:
       tinyglobby: 0.2.15
     transitivePeerDependencies:
       - supports-color
+
+  '@tanstack/solid-query@5.90.23(solid-js@1.9.10)':
+    dependencies:
+      '@tanstack/query-core': 5.90.20
+      solid-js: 1.9.10
 
   '@tanstack/solid-router@1.154.9(solid-js@1.9.10)':
     dependencies:
@@ -2797,6 +2824,12 @@ snapshots:
       minipass: 7.1.2
       minizlib: 3.1.0
       yallist: 5.0.0
+
+  temporal-polyfill@0.3.0:
+    dependencies:
+      temporal-spec: 0.3.0
+
+  temporal-spec@0.3.0: {}
 
   thenify-all@1.6.0:
     dependencies:
