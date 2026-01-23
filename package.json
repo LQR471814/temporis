@@ -1,31 +1,32 @@
 {
-  "name": "recursive-tasks",
-  "version": "0.0.0",
-  "description": "",
-  "type": "module",
-  "scripts": {
-    "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "@tanstack/router-devtools": "^1.120.1",
-    "@tanstack/router-plugin": "^1.120.1",
-    "@types/node": "^25.0.10",
-    "autoprefixer": "^10.4.23",
-    "postcss": "^8.5.6",
-    "solid-devtools": "^0.34.3",
-    "tailwindcss": "^3.4.19",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.4",
-    "vite-plugin-solid": "^2.11.8"
-  },
-  "dependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "@tanstack/solid-router": "^1.120.1",
-    "@thisbeyond/solid-dnd": "^0.7.5",
-    "solid-js": "^1.9.9"
-  }
+	"name": "recursive-tasks",
+	"version": "0.0.0",
+	"description": "",
+	"type": "module",
+	"scripts": {
+		"start": "vite",
+		"dev": "vite",
+		"build": "vite build",
+		"serve": "vite preview",
+		"check": "biome"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@tanstack/router-devtools": "^1.120.1",
+		"@tanstack/router-plugin": "^1.120.1",
+		"@types/node": "^25.0.10",
+		"autoprefixer": "^10.4.23",
+		"postcss": "^8.5.6",
+		"solid-devtools": "^0.34.3",
+		"tailwindcss": "^3.4.19",
+		"typescript": "^5.9.2",
+		"vite": "^7.1.4",
+		"vite-plugin-solid": "^2.11.8"
+	},
+	"dependencies": {
+		"@biomejs/biome": "^2.3.11",
+		"@tanstack/solid-router": "^1.120.1",
+		"@thisbeyond/solid-dnd": "^0.7.5",
+		"solid-js": "^1.9.9"
+	}
 }

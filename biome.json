@@ -1,1 +1,27 @@
-{}
+{
+	"css": {
+		"parser": {
+			"tailwindDirectives": true
+		}
+	},
+	"files": {
+		"includes": [
+			"./src/**",
+			"!**/*.gen.ts"
+		]
+	},
+	"overrides": [
+		{
+			"includes": [
+				"**/*.css"
+			],
+			"linter": {
+				"rules": {
+					"suspicious": {
+						"noUnknownAtRules": "off"
+					}
+				}
+			}
+		}
+	]
+}
