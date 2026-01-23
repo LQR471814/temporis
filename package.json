@@ -8,7 +8,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"serve": "vite preview",
-		"check": "biome"
+		"check": "biome check --write"
 	},
 	"license": "MIT",
 	"devDependencies": {

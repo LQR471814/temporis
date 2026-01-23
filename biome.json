@@ -5,16 +5,11 @@
 		}
 	},
 	"files": {
-		"includes": [
-			"./src/**",
-			"!**/*.gen.ts"
-		]
+		"includes": ["./src/**", "!**/*.gen.ts"]
 	},
 	"overrides": [
 		{
-			"includes": [
-				"**/*.css"
-			],
+			"includes": ["**/*.css"],
 			"linter": {
 				"rules": {
 					"suspicious": {
