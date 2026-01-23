@@ -543,7 +543,7 @@ services:
         condition: service_healthy
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@supabase-db:5432/postgres
-      ELECTRIC_DATABASE_USE_IPV6: true
+      ELECTRIC_SECRET: ${ELECTRIC_SECRET}
 
 volumes:
   db-config:
