@@ -1,23 +1,23 @@
 /* @refresh reload */
-import './index.css';
-import { render } from 'solid-js/web';
-import 'solid-devtools';
-import { createRouter, RouterProvider } from '@tanstack/solid-router';
-import { routeTree } from './routeTree.gen';
+import "./index.css";
+import { render } from "solid-js/web";
+import "solid-devtools";
+import { createRouter, RouterProvider } from "@tanstack/solid-router";
+import { routeTree } from "./routeTree.gen";
 
 const router = createRouter({ routeTree });
 
-declare module '@tanstack/solid-router' {
+declare module "@tanstack/solid-router" {
   interface Register {
     router: typeof router;
   }
 }
 
-const root = document.getElementById('root');
+const root = document.getElementById("root");
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   throw new Error(
-    'Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?',
+    "Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got misspelled?",
   );
 }
 
