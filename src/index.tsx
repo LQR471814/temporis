@@ -5,8 +5,6 @@ import { render } from "solid-js/web";
 import "solid-devtools";
 import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { routeTree } from "./routeTree.gen";
-import { QueryClientProvider } from "@tanstack/solid-query";
-import { queryClient } from "./lib/query";
 
 const router = createRouter({ routeTree });
 
@@ -24,12 +22,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-if (root)
-	render(
-		() => (
-			<QueryClientProvider client={queryClient}>
-				<RouterProvider router={router} />
-			</QueryClientProvider>
-		),
-		root,
-	);
+if (root) render(() => <RouterProvider router={router} />, root);
