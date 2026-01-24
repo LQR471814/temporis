@@ -8,8 +8,8 @@ export const Route = createRootRoute({
 					<Link to="/" class="text-white hover:text-gray-300">
 						Home
 					</Link>
-					<Link to="/about" class="text-white hover:text-gray-300">
-						About
+					<Link to="/task-data-table" class="text-white hover:text-gray-300">
+						Task Data Table
 					</Link>
 				</div>
 			</nav>

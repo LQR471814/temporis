@@ -13,11 +13,14 @@ export const publicTaskStatusSchema = z.union([
 ]);
 
 export const publicTimescaleTypeSchema = z.union([
+  z.literal("all_time"),
+  z.literal("five_year"),
   z.literal("year"),
+  z.literal("quarter"),
   z.literal("month"),
   z.literal("week"),
   z.literal("day"),
-  z.literal("hour"),
+  z.literal("daypart"),
 ]);
 
 export const jsonSchema = z.lazy(() =>
@@ -95,8 +98,8 @@ export const publicTaskRowSchema = z.object({
   name: z.string(),
   parent_id: z.number(),
   status: publicTaskStatusSchema,
-  timeframe_id: z.number(),
   timeframe_start: z.string(),
+  timescale: publicTimescaleTypeSchema,
 });
 
 export const publicTaskInsertSchema = z.object({
@@ -107,8 +110,8 @@ export const publicTaskInsertSchema = z.object({
   name: z.string(),
   parent_id: z.number(),
   status: publicTaskStatusSchema.optional(),
-  timeframe_id: z.number(),
   timeframe_start: z.string(),
+  timescale: publicTimescaleTypeSchema,
 });
 
 export const publicTaskUpdateSchema = z.object({
@@ -119,8 +122,8 @@ export const publicTaskUpdateSchema = z.object({
   name: z.string().optional(),
   parent_id: z.number().optional(),
   status: publicTaskStatusSchema.optional(),
-  timeframe_id: z.number().optional(),
   timeframe_start: z.string().optional(),
+  timescale: publicTimescaleTypeSchema.optional(),
 });
 
 export const publicTaskRelationshipsSchema = z.tuple([
@@ -145,16 +148,9 @@ export const publicTaskRelationshipsSchema = z.tuple([
     referencedRelation: z.literal("task"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
-  z.object({
-    foreignKeyName: z.literal("task_timeframe_id_fkey"),
-    columns: z.tuple([z.literal("timeframe_id")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("timescale"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
 ]);
 
-export const publicTimescaleRowSchema = z.object({
+export const publicUnusedTimescaleRowSchema = z.object({
   id: z.number(),
   multiplier: z.number(),
   name: z.string(),
@@ -162,7 +158,7 @@ export const publicTimescaleRowSchema = z.object({
   scale_type: publicTimescaleTypeSchema,
 });
 
-export const publicTimescaleInsertSchema = z.object({
+export const publicUnusedTimescaleInsertSchema = z.object({
   id: z.number().optional(),
   multiplier: z.number(),
   name: z.string(),
@@ -170,7 +166,7 @@ export const publicTimescaleInsertSchema = z.object({
   scale_type: publicTimescaleTypeSchema,
 });
 
-export const publicTimescaleUpdateSchema = z.object({
+export const publicUnusedTimescaleUpdateSchema = z.object({
   id: z.number().optional(),
   multiplier: z.number().optional(),
   name: z.string().optional(),
@@ -208,6 +204,12 @@ export type PublicTaskUpdate = z.infer<typeof publicTaskUpdateSchema>;
 export type PublicTaskRelationships = z.infer<
   typeof publicTaskRelationshipsSchema
 >;
-export type PublicTimescaleRow = z.infer<typeof publicTimescaleRowSchema>;
-export type PublicTimescaleInsert = z.infer<typeof publicTimescaleInsertSchema>;
-export type PublicTimescaleUpdate = z.infer<typeof publicTimescaleUpdateSchema>;
+export type PublicUnusedTimescaleRow = z.infer<
+  typeof publicUnusedTimescaleRowSchema
+>;
+export type PublicUnusedTimescaleInsert = z.infer<
+  typeof publicUnusedTimescaleInsertSchema
+>;
+export type PublicUnusedTimescaleUpdate = z.infer<
+  typeof publicUnusedTimescaleUpdateSchema
+>;

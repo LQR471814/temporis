@@ -9,7 +9,8 @@
 		"build": "vite build",
 		"serve": "vite preview",
 		"check": "biome check --write",
-		"codegen": "supabase gen types typescript --db-url postgresql://postgres:$POSTGRES_PASSWORD@127.0.0.1:6432/postgres > ./src/lib/supabase/types.gen.ts && supazod -i ./src/lib/supabase/types.gen.ts -o ./src/lib/supabase/schemas.gen.ts --inline-types"
+		"codegen": "supabase gen types typescript > ./src/lib/supabase/types.gen.ts && supazod -i ./src/lib/supabase/types.gen.ts -o ./src/lib/supabase/schemas.gen.ts --inline-types",
+		"migrate": "drizzle-kit push && tsx ./schema/seed.ts"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -17,11 +18,15 @@
 		"@tanstack/router-plugin": "^1.120.1",
 		"@types/node": "^25.0.10",
 		"autoprefixer": "^10.4.23",
+		"drizzle-kit": "^0.31.8",
+		"drizzle-orm": "^0.45.1",
 		"postcss": "^8.5.6",
+		"postgres": "^3.4.8",
 		"solid-devtools": "^0.34.3",
 		"supabase": "^2.72.8",
 		"supazod": "^4.5.0",
 		"tailwindcss": "^3.4.19",
+		"tsx": "^4.21.0",
 		"typescript": "^5.9.2",
 		"vite": "^7.1.4",
 		"vite-plugin-solid": "^2.11.8"

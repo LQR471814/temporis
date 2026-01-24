@@ -8,11 +8,13 @@ import {
 import { createFileRoute } from "@tanstack/solid-router";
 import type { ColumnDef } from "@tanstack/solid-table";
 import { Show } from "solid-js";
+import { Button } from "~/components/ui/button";
 import { DataTable } from "~/components/ui/data-table";
 import { executorsCollection, tasksCollection } from "~/lib/db/tables";
 
 const joinedTasks = createCollection(
 	liveQueryCollectionOptions({
+		id: "tasks_data_table",
 		query: (q) =>
 			q
 				.from({ task: tasksCollection })
@@ -65,20 +67,33 @@ const columns: ColumnDef<JoinedTask>[] = [
 	},
 ];
 
-export const Route = createFileRoute("/tasks")({
-	component: Tasks,
+export const Route = createFileRoute("/task-data-table")({
+	component: RouteComponent,
 });
 
-function Tasks() {
+function RouteComponent() {
 	const query = useLiveQuery((q) =>
 		q
 			.from({ joinedTasks })
 			.orderBy(({ joinedTasks }) => joinedTasks.name)
 			.limit(50),
-	);
+	)
 	return (
 		<Show when={!query.isLoading} fallback={<div>Loading...</div>}>
 			<DataTable columns={columns} data={query()} />
+			<Button onClick={() => {
+				tasksCollection.insert({
+					id: 1,
+					parent_id: 1,
+					name: "Untitled",
+					comments: "",
+					status: "pending",
+					timeframe_id: 0,
+					timeframe_start: new Date().toISOString(),
+					blocked_by: null,
+					assigned_to: null,
+				})
+			}}>Add Row</Button>
 		</Show>
-	);
+	)
 }

@@ -9,12 +9,12 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TasksRouteImport } from './routes/tasks'
+import { Route as TaskDataTableRouteImport } from './routes/task-data-table'
 import { Route as IndexRouteImport } from './routes/index'
 
-const TasksRoute = TasksRouteImport.update({
-  id: '/tasks',
-  path: '/tasks',
+const TaskDataTableRoute = TaskDataTableRouteImport.update({
+  id: '/task-data-table',
+  path: '/task-data-table',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,37 +25,37 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/tasks': typeof TasksRoute
+  '/task-data-table': typeof TaskDataTableRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/tasks': typeof TasksRoute
+  '/task-data-table': typeof TaskDataTableRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/tasks': typeof TasksRoute
+  '/task-data-table': typeof TaskDataTableRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tasks'
+  fullPaths: '/' | '/task-data-table'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tasks'
-  id: '__root__' | '/' | '/tasks'
+  to: '/' | '/task-data-table'
+  id: '__root__' | '/' | '/task-data-table'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  TasksRoute: typeof TasksRoute
+  TaskDataTableRoute: typeof TaskDataTableRoute
 }
 
 declare module '@tanstack/solid-router' {
   interface FileRoutesByPath {
-    '/tasks': {
-      id: '/tasks'
-      path: '/tasks'
-      fullPath: '/tasks'
-      preLoaderRoute: typeof TasksRouteImport
+    '/task-data-table': {
+      id: '/task-data-table'
+      path: '/task-data-table'
+      fullPath: '/task-data-table'
+      preLoaderRoute: typeof TaskDataTableRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -70,7 +70,7 @@ declare module '@tanstack/solid-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  TasksRoute: TasksRoute,
+  TaskDataTableRoute: TaskDataTableRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -87,8 +87,8 @@ export type Database = {
           name: string
           parent_id: number
           status: Database["public"]["Enums"]["task_status"]
-          timeframe_id: number
           timeframe_start: string
+          timescale: Database["public"]["Enums"]["timescale_type"]
         }
         Insert: {
           assigned_to?: number | null
@@ -98,8 +98,8 @@ export type Database = {
           name: string
           parent_id: number
           status?: Database["public"]["Enums"]["task_status"]
-          timeframe_id: number
           timeframe_start: string
+          timescale: Database["public"]["Enums"]["timescale_type"]
         }
         Update: {
           assigned_to?: number | null
@@ -109,8 +109,8 @@ export type Database = {
           name?: string
           parent_id?: number
           status?: Database["public"]["Enums"]["task_status"]
-          timeframe_id?: number
           timeframe_start?: string
+          timescale?: Database["public"]["Enums"]["timescale_type"]
         }
         Relationships: [
           {
@@ -134,16 +134,9 @@ export type Database = {
             referencedRelation: "task"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "task_timeframe_id_fkey"
-            columns: ["timeframe_id"]
-            isOneToOne: false
-            referencedRelation: "timescale"
-            referencedColumns: ["id"]
-          },
         ]
       }
-      timescale: {
+      unused_timescale: {
         Row: {
           id: number
           multiplier: number
@@ -176,7 +169,15 @@ export type Database = {
     }
     Enums: {
       task_status: "pending" | "complete" | "dropped"
-      timescale_type: "year" | "month" | "week" | "day" | "hour"
+      timescale_type:
+        | "all_time"
+        | "five_year"
+        | "year"
+        | "quarter"
+        | "month"
+        | "week"
+        | "day"
+        | "daypart"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -308,7 +309,16 @@ export const Constants = {
   public: {
     Enums: {
       task_status: ["pending", "complete", "dropped"],
-      timescale_type: ["year", "month", "week", "day", "hour"],
+      timescale_type: [
+        "all_time",
+        "five_year",
+        "year",
+        "quarter",
+        "month",
+        "week",
+        "day",
+        "daypart",
+      ],
     },
   },
 } as const
