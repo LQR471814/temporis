@@ -6,6 +6,12 @@
 
 import { z } from "zod";
 
+export const publicTaskStatusSchema = z.union([
+  z.literal("pending"),
+  z.literal("complete"),
+  z.literal("dropped"),
+]);
+
 export const publicTimescaleTypeSchema = z.union([
   z.literal("year"),
   z.literal("month"),
@@ -88,6 +94,7 @@ export const publicTaskRowSchema = z.object({
   id: z.number(),
   name: z.string(),
   parent_id: z.number(),
+  status: publicTaskStatusSchema,
   timeframe_id: z.number(),
   timeframe_start: z.string(),
 });
@@ -99,6 +106,7 @@ export const publicTaskInsertSchema = z.object({
   id: z.number().optional(),
   name: z.string(),
   parent_id: z.number(),
+  status: publicTaskStatusSchema.optional(),
   timeframe_id: z.number(),
   timeframe_start: z.string(),
 });
@@ -110,6 +118,7 @@ export const publicTaskUpdateSchema = z.object({
   id: z.number().optional(),
   name: z.string().optional(),
   parent_id: z.number().optional(),
+  status: publicTaskStatusSchema.optional(),
   timeframe_id: z.number().optional(),
   timeframe_start: z.string().optional(),
 });
@@ -169,6 +178,7 @@ export const publicTimescaleUpdateSchema = z.object({
   scale_type: publicTimescaleTypeSchema.optional(),
 });
 
+export type PublicTaskStatus = z.infer<typeof publicTaskStatusSchema>;
 export type PublicTimescaleType = z.infer<typeof publicTimescaleTypeSchema>;
 export type Json = z.infer<typeof jsonSchema>;
 export type GraphqlPublicGraphqlArgs = z.infer<

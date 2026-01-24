@@ -139,3 +139,7 @@
 ::-webkit-scrollbar-corner {
 	display: none;
 }
+
+body, #root {
+	@apply h-full;
+}

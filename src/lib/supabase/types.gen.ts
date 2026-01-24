@@ -86,6 +86,7 @@ export type Database = {
           id: number
           name: string
           parent_id: number
+          status: Database["public"]["Enums"]["task_status"]
           timeframe_id: number
           timeframe_start: string
         }
@@ -96,6 +97,7 @@ export type Database = {
           id?: number
           name: string
           parent_id: number
+          status?: Database["public"]["Enums"]["task_status"]
           timeframe_id: number
           timeframe_start: string
         }
@@ -106,6 +108,7 @@ export type Database = {
           id?: number
           name?: string
           parent_id?: number
+          status?: Database["public"]["Enums"]["task_status"]
           timeframe_id?: number
           timeframe_start?: string
         }
@@ -172,6 +175,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      task_status: "pending" | "complete" | "dropped"
       timescale_type: "year" | "month" | "week" | "day" | "hour"
     }
     CompositeTypes: {
@@ -303,6 +307,7 @@ export const Constants = {
   },
   public: {
     Enums: {
+      task_status: ["pending", "complete", "dropped"],
       timescale_type: ["year", "month", "week", "day", "hour"],
     },
   },

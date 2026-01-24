@@ -2,7 +2,7 @@ import { createRootRoute, Link, Outlet } from "@tanstack/solid-router";
 
 export const Route = createRootRoute({
 	component: () => (
-		<div class="min-h-screen">
+		<div class="h-full">
 			<nav class="bg-gray-800 p-4">
 				<div class="flex gap-4 justify-center">
 					<Link to="/" class="text-white hover:text-gray-300">

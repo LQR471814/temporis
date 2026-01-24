@@ -19,7 +19,7 @@ function Home() {
 			</div>
 			<div class="text-center mt-8">
 				<Link to="/tasks" class="text-blue-500 hover:underline">
-					Go to About
+					Go to Tasks
 				</Link>
 			</div>
 		</div>

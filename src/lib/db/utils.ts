@@ -1,17 +1,19 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
 import { queryCollectionOptions } from "@tanstack/query-db-collection";
-import { createCollection } from "@tanstack/solid-db";
-import type { QueryOptions } from "@tanstack/solid-query";
+import { createCollection, type StandardSchema } from "@tanstack/solid-db";
+import type { QueryKey, QueryOptions } from "@tanstack/solid-query";
 import { queryClient } from "../query";
 
 export function tableQueryCollection<
 	T extends {
-		select: QueryOptions;
+		select: Omit<QueryOptions, "queryKey"> & { queryKey: QueryKey };
 		insert: { mutationFn: (variables: any) => Promise<void> };
 		update: { mutationFn: (variables: any) => Promise<void> };
 		delete: { mutationFn: (variables: any) => Promise<void> };
 	},
+	GetKey extends (i: __Row) => string | number,
+	Schema extends StandardSchema<unknown>,
 	__Row extends ReturnType<
 		T["select"]["queryFn"] extends (variables: any) => any
 		? T["select"]["queryFn"]
@@ -19,10 +21,16 @@ export function tableQueryCollection<
 	> extends Promise<(infer U)[]>
 	? U
 	: never,
->(table: T, getKey: (i: __Row) => string | number) {
+>(table: T, getKey: GetKey, schema: Schema) {
 	return createCollection(
-		queryCollectionOptions({
+		queryCollectionOptions<
+			Schema,
+			T["select"]["queryFn"],
+			T["select"]["queryKey"],
+			ReturnType<GetKey>
+		>({
 			...table.select,
+			schema,
 			getKey,
 			queryClient,
 			onInsert: async ({ transaction }: any) => {
@@ -46,3 +54,4 @@ export function tableQueryCollection<
 		} as any),
 	);
 }
+
