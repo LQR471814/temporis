@@ -6,10 +6,12 @@
 
 import { z } from "zod";
 
-export const publicTaskStatusSchema = z.union([
-  z.literal("pending"),
-  z.literal("done"),
-  z.literal("dropped"),
+export const publicTimescaleTypeSchema = z.union([
+  z.literal("year"),
+  z.literal("month"),
+  z.literal("week"),
+  z.literal("day"),
+  z.literal("hour"),
 ]);
 
 export const jsonSchema = z.lazy(() =>
@@ -33,43 +35,93 @@ export const graphqlPublicGraphqlArgsSchema = z.object({
 
 export const graphqlPublicGraphqlReturnsSchema = jsonSchema;
 
+export const publicExecutorRowSchema = z.object({
+  comments: z.string(),
+  id: z.number(),
+  name: z.string(),
+});
+
+export const publicExecutorInsertSchema = z.object({
+  comments: z.string(),
+  id: z.number().optional(),
+  name: z.string(),
+});
+
+export const publicExecutorUpdateSchema = z.object({
+  comments: z.string().optional(),
+  id: z.number().optional(),
+  name: z.string().optional(),
+});
+
+export const publicExecutorOccupiedRowSchema = z.object({
+  end: z.string(),
+  executor_id: z.number(),
+  start: z.string(),
+});
+
+export const publicExecutorOccupiedInsertSchema = z.object({
+  end: z.string(),
+  executor_id: z.number(),
+  start: z.string(),
+});
+
+export const publicExecutorOccupiedUpdateSchema = z.object({
+  end: z.string().optional(),
+  executor_id: z.number().optional(),
+  start: z.string().optional(),
+});
+
+export const publicExecutorOccupiedRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("executor_occupied_executor_id_fkey"),
+    columns: z.tuple([z.literal("executor_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("executor"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
+]);
+
 export const publicTaskRowSchema = z.object({
-  assigned_user: z.string().nullable(),
+  assigned_to: z.number().nullable(),
   blocked_by: z.number().nullable(),
-  comments: z.string().nullable(),
+  comments: z.string(),
   id: z.number(),
   name: z.string(),
   parent_id: z.number(),
-  status: publicTaskStatusSchema,
-  timeframe_end: z.string(),
+  timeframe_id: z.number(),
   timeframe_start: z.string(),
 });
 
 export const publicTaskInsertSchema = z.object({
-  assigned_user: z.string().optional().nullable(),
+  assigned_to: z.number().optional().nullable(),
   blocked_by: z.number().optional().nullable(),
-  comments: z.string().optional().nullable(),
-  id: z.never().optional(),
+  comments: z.string(),
+  id: z.number().optional(),
   name: z.string(),
   parent_id: z.number(),
-  status: publicTaskStatusSchema.optional(),
-  timeframe_end: z.string(),
+  timeframe_id: z.number(),
   timeframe_start: z.string(),
 });
 
 export const publicTaskUpdateSchema = z.object({
-  assigned_user: z.string().optional().nullable(),
+  assigned_to: z.number().optional().nullable(),
   blocked_by: z.number().optional().nullable(),
-  comments: z.string().optional().nullable(),
-  id: z.never().optional(),
+  comments: z.string().optional(),
+  id: z.number().optional(),
   name: z.string().optional(),
   parent_id: z.number().optional(),
-  status: publicTaskStatusSchema.optional(),
-  timeframe_end: z.string().optional(),
+  timeframe_id: z.number().optional(),
   timeframe_start: z.string().optional(),
 });
 
 export const publicTaskRelationshipsSchema = z.tuple([
+  z.object({
+    foreignKeyName: z.literal("task_assigned_to_fkey"),
+    columns: z.tuple([z.literal("assigned_to")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("executor"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
   z.object({
     foreignKeyName: z.literal("task_blocked_by_fkey"),
     columns: z.tuple([z.literal("blocked_by")]),
@@ -84,9 +136,40 @@ export const publicTaskRelationshipsSchema = z.tuple([
     referencedRelation: z.literal("task"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
+  z.object({
+    foreignKeyName: z.literal("task_timeframe_id_fkey"),
+    columns: z.tuple([z.literal("timeframe_id")]),
+    isOneToOne: z.literal(false),
+    referencedRelation: z.literal("timescale"),
+    referencedColumns: z.tuple([z.literal("id")]),
+  }),
 ]);
 
-export type PublicTaskStatus = z.infer<typeof publicTaskStatusSchema>;
+export const publicTimescaleRowSchema = z.object({
+  id: z.number(),
+  multiplier: z.number(),
+  name: z.string(),
+  offset: z.number(),
+  scale_type: publicTimescaleTypeSchema,
+});
+
+export const publicTimescaleInsertSchema = z.object({
+  id: z.number().optional(),
+  multiplier: z.number(),
+  name: z.string(),
+  offset: z.number(),
+  scale_type: publicTimescaleTypeSchema,
+});
+
+export const publicTimescaleUpdateSchema = z.object({
+  id: z.number().optional(),
+  multiplier: z.number().optional(),
+  name: z.string().optional(),
+  offset: z.number().optional(),
+  scale_type: publicTimescaleTypeSchema.optional(),
+});
+
+export type PublicTimescaleType = z.infer<typeof publicTimescaleTypeSchema>;
 export type Json = z.infer<typeof jsonSchema>;
 export type GraphqlPublicGraphqlArgs = z.infer<
   typeof graphqlPublicGraphqlArgsSchema
@@ -94,9 +177,27 @@ export type GraphqlPublicGraphqlArgs = z.infer<
 export type GraphqlPublicGraphqlReturns = z.infer<
   typeof graphqlPublicGraphqlReturnsSchema
 >;
+export type PublicExecutorRow = z.infer<typeof publicExecutorRowSchema>;
+export type PublicExecutorInsert = z.infer<typeof publicExecutorInsertSchema>;
+export type PublicExecutorUpdate = z.infer<typeof publicExecutorUpdateSchema>;
+export type PublicExecutorOccupiedRow = z.infer<
+  typeof publicExecutorOccupiedRowSchema
+>;
+export type PublicExecutorOccupiedInsert = z.infer<
+  typeof publicExecutorOccupiedInsertSchema
+>;
+export type PublicExecutorOccupiedUpdate = z.infer<
+  typeof publicExecutorOccupiedUpdateSchema
+>;
+export type PublicExecutorOccupiedRelationships = z.infer<
+  typeof publicExecutorOccupiedRelationshipsSchema
+>;
 export type PublicTaskRow = z.infer<typeof publicTaskRowSchema>;
 export type PublicTaskInsert = z.infer<typeof publicTaskInsertSchema>;
 export type PublicTaskUpdate = z.infer<typeof publicTaskUpdateSchema>;
 export type PublicTaskRelationships = z.infer<
   typeof publicTaskRelationshipsSchema
 >;
+export type PublicTimescaleRow = z.infer<typeof publicTimescaleRowSchema>;
+export type PublicTimescaleInsert = z.infer<typeof publicTimescaleInsertSchema>;
+export type PublicTimescaleUpdate = z.infer<typeof publicTimescaleUpdateSchema>;

@@ -34,41 +34,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      executor: {
+        Row: {
+          comments: string
+          id: number
+          name: string
+        }
+        Insert: {
+          comments: string
+          id?: number
+          name: string
+        }
+        Update: {
+          comments?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      executor_occupied: {
+        Row: {
+          end: string
+          executor_id: number
+          start: string
+        }
+        Insert: {
+          end: string
+          executor_id: number
+          start: string
+        }
+        Update: {
+          end?: string
+          executor_id?: number
+          start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "executor_occupied_executor_id_fkey"
+            columns: ["executor_id"]
+            isOneToOne: false
+            referencedRelation: "executor"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       task: {
         Row: {
-          assigned_user: string | null
+          assigned_to: number | null
           blocked_by: number | null
-          comments: string | null
+          comments: string
           id: number
           name: string
           parent_id: number
-          status: Database["public"]["Enums"]["task_status"]
-          timeframe_end: string
+          timeframe_id: number
           timeframe_start: string
         }
         Insert: {
-          assigned_user?: string | null
+          assigned_to?: number | null
           blocked_by?: number | null
-          comments?: string | null
-          id?: never
+          comments: string
+          id?: number
           name: string
           parent_id: number
-          status?: Database["public"]["Enums"]["task_status"]
-          timeframe_end: string
+          timeframe_id: number
           timeframe_start: string
         }
         Update: {
-          assigned_user?: string | null
+          assigned_to?: number | null
           blocked_by?: number | null
-          comments?: string | null
-          id?: never
+          comments?: string
+          id?: number
           name?: string
           parent_id?: number
-          status?: Database["public"]["Enums"]["task_status"]
-          timeframe_end?: string
+          timeframe_id?: number
           timeframe_start?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "task_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "executor"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "task_blocked_by_fkey"
             columns: ["blocked_by"]
@@ -83,7 +131,38 @@ export type Database = {
             referencedRelation: "task"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "task_timeframe_id_fkey"
+            columns: ["timeframe_id"]
+            isOneToOne: false
+            referencedRelation: "timescale"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      timescale: {
+        Row: {
+          id: number
+          multiplier: number
+          name: string
+          offset: number
+          scale_type: Database["public"]["Enums"]["timescale_type"]
+        }
+        Insert: {
+          id?: number
+          multiplier: number
+          name: string
+          offset: number
+          scale_type: Database["public"]["Enums"]["timescale_type"]
+        }
+        Update: {
+          id?: number
+          multiplier?: number
+          name?: string
+          offset?: number
+          scale_type?: Database["public"]["Enums"]["timescale_type"]
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -93,7 +172,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      task_status: "pending" | "done" | "dropped"
+      timescale_type: "year" | "month" | "week" | "day" | "hour"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -224,7 +303,7 @@ export const Constants = {
   },
   public: {
     Enums: {
-      task_status: ["pending", "done", "dropped"],
+      timescale_type: ["year", "month", "week", "day", "hour"],
     },
   },
 } as const
