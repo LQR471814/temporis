@@ -32,13 +32,17 @@ export const taskTable = pgTable("task", {
 	timescale: timescale_type().notNull(),
 	timeframe_start: timestamp().notNull(),
 
+	assigned_to: integer().references(() => executorTable.id),
 	parent_id: integer()
 		.notNull()
 		.references((): AnyPgColumn => taskTable.id, {
 			onUpdate: "cascade",
 			onDelete: "cascade",
 		}),
-	assigned_to: integer().references(() => executorTable.id),
+	blocked_by: integer().references((): AnyPgColumn => taskTable.id, {
+		onUpdate: "cascade",
+		onDelete: "set null",
+	}),
 
 	optimistic: real().notNull(),
 	expected: real().notNull(),

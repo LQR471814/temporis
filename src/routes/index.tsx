@@ -18,7 +18,7 @@ function Home() {
 				<Button onclick={increment}>Increment</Button>
 			</div>
 			<div class="text-center mt-8">
-				<Link to="/tasks" class="text-blue-500 hover:underline">
+				<Link to="/task-data-table" class="text-blue-500 hover:underline">
 					Go to Tasks
 				</Link>
 			</div>
