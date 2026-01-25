@@ -11,6 +11,12 @@ export const publicImplementationTypeSchema = z.union([
   z.literal("hours"),
 ]);
 
+export const publicTaskStatusSchema = z.union([
+  z.literal("pending"),
+  z.literal("completed"),
+  z.literal("dropped"),
+]);
+
 export const publicTimescaleTypeSchema = z.union([
   z.literal("all_time"),
   z.literal("five_year"),
@@ -100,6 +106,7 @@ export const publicTaskRowSchema = z.object({
   optimistic: z.number(),
   parent_id: z.number(),
   pessimistic: z.number(),
+  status: publicTaskStatusSchema,
   timeframe_start: z.string(),
   timescale: publicTimescaleTypeSchema,
 });
@@ -115,6 +122,7 @@ export const publicTaskInsertSchema = z.object({
   optimistic: z.number(),
   parent_id: z.number(),
   pessimistic: z.number(),
+  status: publicTaskStatusSchema.optional(),
   timeframe_start: z.string(),
   timescale: publicTimescaleTypeSchema,
 });
@@ -130,6 +138,7 @@ export const publicTaskUpdateSchema = z.object({
   optimistic: z.number().optional(),
   parent_id: z.number().optional(),
   pessimistic: z.number().optional(),
+  status: publicTaskStatusSchema.optional(),
   timeframe_start: z.string().optional(),
   timescale: publicTimescaleTypeSchema.optional(),
 });
@@ -161,6 +170,7 @@ export const publicTaskRelationshipsSchema = z.tuple([
 export type PublicImplementationType = z.infer<
   typeof publicImplementationTypeSchema
 >;
+export type PublicTaskStatus = z.infer<typeof publicTaskStatusSchema>;
 export type PublicTimescaleType = z.infer<typeof publicTimescaleTypeSchema>;
 export type Json = z.infer<typeof jsonSchema>;
 export type GraphqlPublicGraphqlArgs = z.infer<

@@ -90,6 +90,7 @@ export type Database = {
           optimistic: number
           parent_id: number
           pessimistic: number
+          status: Database["public"]["Enums"]["task_status"]
           timeframe_start: string
           timescale: Database["public"]["Enums"]["timescale_type"]
         }
@@ -104,6 +105,7 @@ export type Database = {
           optimistic: number
           parent_id: number
           pessimistic: number
+          status?: Database["public"]["Enums"]["task_status"]
           timeframe_start: string
           timescale: Database["public"]["Enums"]["timescale_type"]
         }
@@ -118,6 +120,7 @@ export type Database = {
           optimistic?: number
           parent_id?: number
           pessimistic?: number
+          status?: Database["public"]["Enums"]["task_status"]
           timeframe_start?: string
           timescale?: Database["public"]["Enums"]["timescale_type"]
         }
@@ -154,6 +157,7 @@ export type Database = {
     }
     Enums: {
       implementation_type: "children" | "hours"
+      task_status: "pending" | "completed" | "dropped"
       timescale_type:
         | "all_time"
         | "five_year"
@@ -294,6 +298,7 @@ export const Constants = {
   public: {
     Enums: {
       implementation_type: ["children", "hours"],
+      task_status: ["pending", "completed", "dropped"],
       timescale_type: [
         "all_time",
         "five_year",
