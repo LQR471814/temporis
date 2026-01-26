@@ -48,7 +48,7 @@ export function Timeframe(props: {
 			class={cn(
 				"flex flex-col min-h-[100px] overflow-y-auto group relative",
 				"border border-muted rounded-lg",
-				"transition-colors hover:border-primary/30 cursor-pointer",
+				"transition-colors hover:border-primary/30 cursor-default",
 				props.class,
 			)}
 			onDblClick={() => {

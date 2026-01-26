@@ -6,7 +6,6 @@ import {
 	ResizablePanel,
 } from "~/components/ui/resizable";
 import { VerticalTimeframes } from "~/components/vertical";
-import { day, week } from "~/lib/timescales";
 
 export const Route = createFileRoute("/test/resizable")({
 	component: RouteComponent,
@@ -22,7 +21,7 @@ function RouteComponent() {
 			<ResizablePanel initialSize={0.85} class="overflow-hidden">
 				<Resizable orientation="vertical">
 					<ResizablePanel initialSize={0.5} class="overflow-hidden">
-						<HorizontalTimeframes class="h-full" parent={week} child={day} />
+						<HorizontalTimeframes class="h-full" />
 					</ResizablePanel>
 					<ResizableHandle withHandle />
 					<ResizablePanel initialSize={0.5} class="overflow-hidden">
