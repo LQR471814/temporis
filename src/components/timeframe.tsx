@@ -43,13 +43,25 @@ export function Timeframe(props: {
 	const query = useLiveQuery((q) => q.from({ timeframeTasks }));
 
 	return (
-		<div
+		<button
+			type="button"
 			class={cn(
-				"group relative border border-muted rounded-lg flex flex-col min-h-[100px] overflow-y-auto transition-colors hover:border-primary/30",
+				"flex flex-col min-h-[100px] overflow-y-auto group relative",
+				"border border-muted rounded-lg",
+				"transition-colors hover:border-primary/30 cursor-pointer",
 				props.class,
 			)}
+			onDblClick={() => {
+				console.log("double clicked!");
+			}}
 		>
-			<div class="sticky top-0 bg-background border-b border-muted px-2 py-1 transition-colors group-hover:border-primary/30 flex justify-between items-center">
+			<div
+				classList={{
+					"flex justify-between items-center sticky top-0": true,
+					"bg-background border-b border-muted px-2 py-1": true,
+					"transition-colors group-hover:border-primary/30": true,
+				}}
+			>
 				<p class="text-sm">{instance.name}</p>
 				<Button
 					class="px-1 py-0 h-min aspect-square text-primary/30"
@@ -70,6 +82,6 @@ export function Timeframe(props: {
 					)}
 				</For>
 			</div>
-		</div>
+		</button>
 	);
 }
