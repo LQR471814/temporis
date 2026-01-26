@@ -52,7 +52,7 @@ export function Timeframe(props: {
 			<div class="sticky top-0 bg-background border-b border-muted px-2 py-1 transition-colors group-hover:border-primary/30 flex justify-between items-center">
 				<p class="text-sm">{instance.name}</p>
 				<Button
-					class="px-1 py-0 h-min aspect-square text-primary/30 group-hover:text-primary"
+					class="px-1 py-0 h-min aspect-square text-primary/30"
 					variant="ghost"
 				>
 					＋
