@@ -9,24 +9,44 @@ export interface TimescaleInstance {
 	end: Temporal.ZonedDateTime;
 }
 
-export class TwoYear implements Timescale {
-	name = "Two Year";
+class SubCenturyMultiYear implements Timescale {
+	name: string;
+	private multiplier: number;
 
-	private getTwoYear(now: Temporal.ZonedDateTime) {
-		return Math.ceil(now.year / 2);
+	constructor(multiplier: number) {
+		this.multiplier = multiplier;
+		this.name = `${multiplier} Year`;
+	}
+
+	private getMultiYearStart(now: Temporal.ZonedDateTime) {
+		return Math.floor(now.year / this.multiplier) * this.multiplier;
 	}
 
 	instance(now: Temporal.ZonedDateTime): TimescaleInstance {
 		const start = Temporal.ZonedDateTime.from({
-			year: now.year,
-			timeZoneId: now.timeZoneId,
+			year: this.getMultiYearStart(now),
+			month: 1,
+			day: 1,
+			timeZone: now.timeZoneId,
 		});
-		const end = start.add({ years: 1 });
+		const end = start.add({ years: this.multiplier });
 		return {
-			name: `${now.year}`,
+			name: `${start.year}—${end.year}`,
 			start,
 			end,
 		};
+	}
+}
+
+export class Decade extends SubCenturyMultiYear {
+	constructor() {
+		super(10);
+	}
+}
+
+export class FiveYear extends SubCenturyMultiYear {
+	constructor() {
+		super(5);
 	}
 }
 
@@ -36,7 +56,9 @@ export class Year implements Timescale {
 	instance(now: Temporal.ZonedDateTime): TimescaleInstance {
 		const start = Temporal.ZonedDateTime.from({
 			year: now.year,
-			timeZoneId: now.timeZoneId,
+			month: 1,
+			day: 1,
+			timeZone: now.timeZoneId,
 		});
 		const end = start.add({ years: 1 });
 		return {
@@ -59,7 +81,8 @@ export class Semester implements Timescale {
 		const start = Temporal.ZonedDateTime.from({
 			year: now.year,
 			month: 1 + (semester - 1) * 6,
-			timeZoneId: now.timeZoneId,
+			day: 1,
+			timeZone: now.timeZoneId,
 		});
 		const end = start.add({ months: 6 });
 		return {
@@ -82,7 +105,8 @@ export class Quarter implements Timescale {
 		const start = Temporal.ZonedDateTime.from({
 			year: now.year,
 			month: 1 + (quarter - 1) * 3,
-			timeZoneId: now.timeZoneId,
+			day: 1,
+			timeZone: now.timeZoneId,
 		});
 		const end = start.add({ months: 3 });
 		return {
@@ -100,7 +124,8 @@ export class Month implements Timescale {
 		const start = Temporal.ZonedDateTime.from({
 			year: now.year,
 			month: now.month,
-			timeZoneId: now.timeZoneId,
+			day: 1,
+			timeZone: now.timeZoneId,
 		});
 		const end = start.add({ months: 1 });
 		return {
@@ -117,11 +142,7 @@ export class Week implements Timescale {
 	instance(now: Temporal.ZonedDateTime): TimescaleInstance {
 		if (now.weekOfYear === undefined)
 			throw new Error("weeks unsupported in current calendar");
-		const start = Temporal.ZonedDateTime.from({
-			year: now.year,
-			weekOfYear: now.weekOfYear,
-			timeZoneId: now.timeZoneId,
-		});
+		const start = startOfDay(now.subtract({ days: now.dayOfWeek }));
 		const end = start.add({ weeks: 1 });
 		return {
 			name: `W${start.weekOfYear}`,
@@ -135,11 +156,7 @@ export class Day implements Timescale {
 	name = "Day";
 
 	instance(now: Temporal.ZonedDateTime): TimescaleInstance {
-		const start = Temporal.ZonedDateTime.from({
-			year: now.year,
-			dayOfYear: now.dayOfYear,
-			timeZoneId: now.timeZoneId,
-		});
+		const start = startOfDay(now);
 		const end = start.add({ days: 1 });
 		return {
 			name: `${start.day}`,
@@ -177,9 +194,10 @@ export class Daypart implements Timescale {
 		const dayPart = this.getDaypart(now);
 		const start = Temporal.ZonedDateTime.from({
 			year: now.year,
-			dayOfYear: now.dayOfYear,
+			month: now.month,
+			day: now.day,
 			hour: dayPart.start,
-			timeZoneId: now.timeZoneId,
+			timeZone: now.timeZoneId,
 		});
 		const end = start.with({ hour: dayPart.end });
 		return {
@@ -200,3 +218,24 @@ export enum DaypartValues {
 	LATE_EVENING = "Late Evening",
 	NIGHT = "Night",
 }
+
+function startOfDay(now: Temporal.ZonedDateTime) {
+	return now.with({
+		hour: 0,
+		minute: 0,
+		second: 0,
+		millisecond: 0,
+		microsecond: 0,
+		nanosecond: 0,
+	});
+}
+
+export const decade = new Decade();
+export const fiveyear = new FiveYear();
+export const year = new Year();
+export const semester = new Semester();
+export const quarter = new Quarter();
+export const month = new Month();
+export const week = new Week();
+export const day = new Day();
+export const daypart = new Daypart();

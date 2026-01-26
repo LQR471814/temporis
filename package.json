@@ -9,7 +9,7 @@
 		"build": "vite build",
 		"serve": "vite preview",
 		"check": "biome check --write",
-		"codegen": "supabase gen types typescript --local > ./src/lib/supabase/types.gen.ts && supazod -i ./src/lib/supabase/types.gen.ts -o ./src/lib/supabase/schemas.gen.ts --inline-types",
+		"codegen": "supabase gen types typescript --local > ./src/lib/supabase/types.gen.ts && supazod -i ./src/lib/supabase/types.gen.ts -o ./src/lib/supabase/schemas.gen.ts --inline-types && tsx patch-schemas.ts",
 		"migrate": "drizzle-kit push && tsx ./schema/seed.ts"
 	},
 	"license": "MIT",

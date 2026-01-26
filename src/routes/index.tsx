@@ -1,27 +1,44 @@
-import { createFileRoute, Link } from "@tanstack/solid-router";
-import { createSignal } from "solid-js";
-import { Button } from "~/components/ui/button";
+import { createFileRoute } from "@tanstack/solid-router";
+import { createEffect, createSignal } from "solid-js";
+import { Timeframe } from "~/components/timeframe";
+import {
+	day,
+	daypart,
+	decade,
+	fiveyear,
+	month,
+	quarter,
+	semester,
+	week,
+	year,
+} from "~/lib/timescales";
 
 export const Route = createFileRoute("/")({
 	component: Home,
 });
 
 function Home() {
-	const [count, setCount] = createSignal(0);
-	const increment = () => setCount((prev) => prev + 1);
+	const [now, setNow] = createSignal(Temporal.Now.zonedDateTimeISO());
+	createEffect(() => {
+		const interval = setInterval(() => {
+			setNow(Temporal.Now.zonedDateTimeISO());
+		}, 10000);
+		return () => {
+			clearInterval(interval);
+		};
+	});
 
 	return (
-		<div class="p-4">
-			<h1 class="text-4xl text-green-700 text-center py-10">Home</h1>
-			<p class="text-center text-xl">Count: {count()}</p>
-			<div class="text-center mt-4">
-				<Button onclick={increment}>Increment</Button>
-			</div>
-			<div class="text-center mt-8">
-				<Link to="/task-data-table" class="text-blue-500 hover:underline">
-					Go to Tasks
-				</Link>
-			</div>
+		<div class="flex flex-col gap-3 p-4">
+			<Timeframe timescale={decade} time={now()} />
+			<Timeframe timescale={fiveyear} time={now()} />
+			<Timeframe timescale={year} time={now()} />
+			<Timeframe timescale={semester} time={now()} />
+			<Timeframe timescale={quarter} time={now()} />
+			<Timeframe timescale={month} time={now()} />
+			<Timeframe timescale={week} time={now()} />
+			<Timeframe timescale={day} time={now()} />
+			<Timeframe timescale={daypart} time={now()} />
 		</div>
 	);
 }

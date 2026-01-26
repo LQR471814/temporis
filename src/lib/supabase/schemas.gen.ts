@@ -107,7 +107,7 @@ export const publicTaskRowSchema = z.object({
   parent_id: z.number(),
   pessimistic: z.number(),
   status: publicTaskStatusSchema,
-  timeframe_start: z.string(),
+  timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)),
   timescale: publicTimescaleTypeSchema,
 });
 
@@ -123,7 +123,7 @@ export const publicTaskInsertSchema = z.object({
   parent_id: z.number(),
   pessimistic: z.number(),
   status: publicTaskStatusSchema.optional(),
-  timeframe_start: z.string(),
+  timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)),
   timescale: publicTimescaleTypeSchema,
 });
 
@@ -139,7 +139,7 @@ export const publicTaskUpdateSchema = z.object({
   parent_id: z.number().optional(),
   pessimistic: z.number().optional(),
   status: publicTaskStatusSchema.optional(),
-  timeframe_start: z.string().optional(),
+  timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)).optional(),
   timescale: publicTimescaleTypeSchema.optional(),
 });
 
