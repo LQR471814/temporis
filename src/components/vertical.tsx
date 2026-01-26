@@ -10,11 +10,11 @@ import {
 	week,
 	year,
 } from "~/lib/timescales";
-import { now } from "~/lib/utils";
+import { cn, now } from "~/lib/utils";
 
-export function VerticalTimeframes() {
+export function VerticalTimeframes(props: { class?: string }) {
 	return (
-		<div class="flex flex-col gap-1">
+		<div class={cn("flex flex-col gap-1 p-1", props.class)}>
 			<Timeframe timescale={decade} time={now()} />
 			<Timeframe timescale={fiveyear} time={now()} />
 			<Timeframe timescale={year} time={now()} />

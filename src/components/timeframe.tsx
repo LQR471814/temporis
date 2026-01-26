@@ -11,6 +11,7 @@ import { tasksCollection } from "~/lib/db";
 import type { Timescale } from "~/lib/timescales";
 import { cn } from "~/lib/utils";
 import { Chip } from "./task";
+import { Button } from "./ui/button";
 
 export function Timeframe(props: {
 	class?: string;
@@ -44,14 +45,20 @@ export function Timeframe(props: {
 	return (
 		<div
 			class={cn(
-				"relative border border-muted rounded-lg flex flex-col min-h-[100px] overflow-y-auto",
+				"group relative border border-muted rounded-lg flex flex-col min-h-[100px] overflow-y-auto transition-colors hover:border-primary/30",
 				props.class,
 			)}
 		>
-			<div class="sticky top-0 bg-background border-b border-muted px-2 py-1">
-				<p>{instance.name}</p>
+			<div class="sticky top-0 bg-background border-b border-muted px-2 py-1 transition-colors group-hover:border-primary/30 flex justify-between items-center">
+				<p class="text-sm">{instance.name}</p>
+				<Button
+					class="px-1 py-0 h-min aspect-square text-primary/30 group-hover:text-primary"
+					variant="ghost"
+				>
+					＋
+				</Button>
 			</div>
-			<div class="flex flex-col gap-2 px-2 py-1">
+			<div class="flex flex-col gap-2 px-2 py-1 pb-8">
 				<For each={query()}>
 					{(task) => (
 						<Chip
@@ -63,12 +70,6 @@ export function Timeframe(props: {
 					)}
 				</For>
 			</div>
-			{/* <Button */}
-			{/* 	class="absolute right-1 bottom-1 px-2 py-1 h-min w-min" */}
-			{/* 	variant="outline" */}
-			{/* > */}
-			{/* 	＋ */}
-			{/* </Button> */}
 		</div>
 	);
 }
