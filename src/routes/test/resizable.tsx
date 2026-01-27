@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import * as HorizontalTimeframes from "~/components/horizontal";
+import { TaskProperties } from "~/components/panes/task-properties";
+import { VerticalTimeframes } from "~/components/panes/vertical";
+import { ViewController } from "~/components/panes/view-controller";
 import {
 	Resizable,
 	ResizableHandle,
 	ResizablePanel,
 } from "~/components/ui/resizable";
 import { Separator } from "~/components/ui/separator";
-import { VerticalTimeframes } from "~/components/vertical";
-import { ViewController } from "~/components/view-controller";
 import { CurrentTaskProvider } from "~/context/current-task";
 import { ViewProvider } from "~/context/view";
 
@@ -37,9 +38,7 @@ function RouteComponent() {
 									</ResizablePanel>
 									<ResizableHandle withHandle />
 									<ResizablePanel initialSize={0.5} class="overflow-hidden">
-										<div class="flex h-full items-center justify-center p-6">
-											<span class="font-semibold">Properties</span>
-										</div>
+										<TaskProperties />
 									</ResizablePanel>
 								</Resizable>
 							</ResizablePanel>

@@ -1,5 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
+import { useContext } from "solid-js";
 import {
 	type Collection,
 	createCollection,
@@ -14,15 +15,16 @@ import {
 } from "@tanstack/solid-form";
 import { tasksCollection } from "~/lib/db";
 import { type TimescaleInstance, timescaleTypeOf } from "~/lib/timescales";
-import { FieldInfo } from "./field-info";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { FieldInfo } from "../field-info";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
 	TextField,
 	TextFieldInput,
 	type TextFieldInputProps,
 	TextFieldLabel,
 	TextFieldTextArea,
-} from "./ui/text-field";
+} from "../ui/text-field";
+import { CurrentTaskContext } from "~/context/current-task";
 
 // TODO: improve this hack!
 const __collection = createCollection(
@@ -107,8 +109,8 @@ function FormTextField<
 		any,
 		any
 	>
-		? U
-		: never,
+	? U
+	: never,
 >(props: {
 	field: T;
 	transform: (text: string) => __Return;
@@ -300,7 +302,7 @@ function Fields(props: {
 	);
 }
 
-export function Edit(props: { taskId: number }) {
+function Edit(props: { taskId: number }) {
 	const collection = createCollection(
 		liveQueryCollectionOptions({
 			query: (q) =>
@@ -321,7 +323,7 @@ export function Edit(props: { taskId: number }) {
 	);
 }
 
-export function New(props: { timeframe: TimescaleInstance }) {
+function New(props: { timeframe: TimescaleInstance }) {
 	return (
 		<Fields
 			task={{
@@ -342,5 +344,20 @@ export function New(props: { timeframe: TimescaleInstance }) {
 				console.log("created", obj);
 			}}
 		/>
+	);
+}
+
+export function TaskProperties() {
+	const ctx = useContext(CurrentTaskContext);
+	if (ctx?.selectedTaskId !== undefined) {
+		return <Edit taskId={ctx.selectedTaskId} />;
+	}
+	if (ctx?.newChildTimeframe !== undefined) {
+		return <New timeframe={ctx.newChildTimeframe} />;
+	}
+	return (
+		<div class="flex w-full h-full">
+			<p class="m-auto">No task selected.</p>
+		</div>
 	);
 }

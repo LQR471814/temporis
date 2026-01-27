@@ -1,9 +1,9 @@
 import { createMemo, Show, useContext } from "solid-js";
 import { useCurrentTime, ViewContext } from "~/context/view";
 import * as timescales from "~/lib/timescales";
-import { Button } from "./ui/button";
-import * as Select from "./ui/select";
-import { Separator } from "./ui/separator";
+import { Button } from "~/components/ui/button";
+import * as Select from "~/components/ui/select";
+import { Separator } from "~/components/ui/separator";
 
 const options = timescales.hierarchy
 	.slice(0, timescales.hierarchy.length - 1)

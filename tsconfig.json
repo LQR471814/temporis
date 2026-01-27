@@ -4,7 +4,6 @@
 		"jsx": "preserve",
 		"jsxImportSource": "solid-js",
 		"target": "ESNext",
-
 		// Modules
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
@@ -12,14 +11,23 @@
 		"module": "ESNext",
 		"moduleResolution": "bundler",
 		"noEmit": true,
-
 		// Type Checking & Safety
 		"strict": true,
-		"types": ["vite/client"],
-
-		"baseUrl": ".",
+		"types": [
+			"vite/client"
+		],
 		"paths": {
-			"~/*": ["./src/*"]
+			"*": [
+				"./*"
+			],
+			"~/*": [
+				"./src/*"
+			]
 		}
-	}
+	},
+	"exclude": [
+		"./supabase/**",
+		"./node_modules/**",
+		"**/*.gen.ts"
+	]
 }

@@ -10,7 +10,8 @@
 		"serve": "vite preview",
 		"check": "biome check --write --unsafe",
 		"codegen": "supabase gen types typescript --local > ./src/lib/supabase/types.gen.ts && supazod -i ./src/lib/supabase/types.gen.ts -o ./src/lib/supabase/schemas.gen.ts --inline-types && tsx patch-schemas.ts",
-		"migrate": "drizzle-kit push && tsx ./schema/seed.ts"
+		"migrate": "drizzle-kit push && tsx ./schema/seed.ts",
+		"tscheck": "tsgo -b"
 	},
 	"license": "MIT",
 	"devDependencies": {
@@ -18,6 +19,7 @@
 		"@tanstack/router-devtools": "^1.120.1",
 		"@tanstack/router-plugin": "^1.120.1",
 		"@types/node": "^25.0.10",
+		"@typescript/native-preview": "7.0.0-dev.20260127.1",
 		"autoprefixer": "^10.4.23",
 		"drizzle-kit": "^0.31.8",
 		"drizzle-orm": "^0.45.1",
