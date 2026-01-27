@@ -182,12 +182,12 @@ export class Daypart implements Timescale {
 		end: number;
 		name: string;
 	}[] = [
-		{ start: 0, end: 5, name: "Night" },
-		{ start: 5, end: 12, name: "Morning" },
-		{ start: 12, end: 17, name: "Afternoon" },
-		{ start: 17, end: 21, name: "Evening" },
-		{ start: 21, end: 24, name: "Night" },
-	];
+			{ start: 0, end: 5, name: "0—4" },
+			{ start: 5, end: 12, name: "5—11" },
+			{ start: 12, end: 17, name: "12—16" },
+			{ start: 17, end: 21, name: "17—20" },
+			{ start: 21, end: 24, name: "21—23" },
+		];
 
 	private getDaypart(now: Temporal.ZonedDateTime) {
 		for (const p of Daypart.partitions) {
@@ -207,7 +207,10 @@ export class Daypart implements Timescale {
 			hour: dayPart.start,
 			timeZone: now.timeZoneId,
 		});
-		const end = start.with({ hour: dayPart.end });
+		const end =
+			dayPart.end === 24
+				? start.with({ hour: 0, day: start.day + 1 })
+				: start.with({ hour: dayPart.end });
 		return {
 			name: dayPart.name,
 			start,
