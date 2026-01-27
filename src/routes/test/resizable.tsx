@@ -20,11 +20,11 @@ function RouteComponent() {
 		<ViewProvider>
 			<CurrentTaskProvider>
 				<Resizable orientation="vertical" class="rounded-lg border h-full">
-					<ResizablePanel>
+					<ResizablePanel initialSize={0}>
 						<ViewController />
 					</ResizablePanel>
 					<Separator class="h-0" />
-					<ResizablePanel>
+					<ResizablePanel initialSize={1}>
 						<Resizable orientation="horizontal">
 							<ResizablePanel initialSize={0.15} class="overflow-hidden">
 								<VerticalTimeframes />
