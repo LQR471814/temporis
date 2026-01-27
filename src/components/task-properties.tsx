@@ -6,7 +6,7 @@ import {
 	type Collection,
 } from "@tanstack/solid-db";
 import { tasksCollection } from "~/lib/db";
-import type { TimescaleInstance } from "~/lib/timescales";
+import { timescaleTypeOf, type TimescaleInstance } from "~/lib/timescales";
 import {
 	createForm,
 	type AnyFieldApi,
@@ -172,7 +172,6 @@ function Fields(props: {
 
 			<form.Field
 				name="implementation"
-				validators={{}}
 				children={(field) => (
 					<Tabs
 						onChange={(value) => {
@@ -310,7 +309,14 @@ export function Edit(props: { taskId: number }) {
 		}),
 	);
 	const timeframeTasks = useLiveQuery((q) => q.from({ tasks: collection }));
-	return <Fields task={timeframeTasks()[0]} onSubmit={() => { }} />;
+	return (
+		<Fields
+			task={timeframeTasks()[0]}
+			onSubmit={(obj) => {
+				console.log("updated", obj);
+			}}
+		/>
+	);
 }
 
 export function New(props: { timeframe: TimescaleInstance }) {
@@ -318,8 +324,21 @@ export function New(props: { timeframe: TimescaleInstance }) {
 		<Fields
 			task={{
 				name: "",
+				comments: "",
+				implementation: "hours",
+				status: "pending",
+				optimistic: 0,
+				expected: 0,
+				pessimistic: 0,
+				timeframe_start: props.timeframe.start,
+				timescale: timescaleTypeOf(props.timeframe.timescale),
+				parent_id: 1,
+				assigned_to: null,
+				blocked_by: null,
 			}}
-			onSubmit={() => { }}
+			onSubmit={(obj) => {
+				console.log("created", obj);
+			}}
 		/>
 	);
 }

@@ -1,3 +1,4 @@
+import type { Enums } from "./supabase/types.gen";
 import { now } from "./utils";
 
 export interface Timescale {
@@ -9,6 +10,7 @@ export interface TimescaleInstance {
 	name: string;
 	start: Temporal.ZonedDateTime;
 	end: Temporal.ZonedDateTime;
+	timescale: Timescale;
 }
 
 class SubCenturyMultiYear implements Timescale {
@@ -36,6 +38,7 @@ class SubCenturyMultiYear implements Timescale {
 			name: `${start.year}—${end.year}`,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -67,6 +70,7 @@ export class Year implements Timescale {
 			name: `${now.year}`,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -99,6 +103,7 @@ export class MultiMonth implements Timescale {
 			name: `${this.symbol}${no + 1}`,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -132,6 +137,7 @@ export class Month implements Timescale {
 			name: now.toLocaleString(undefined, { month: "long" }),
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -148,6 +154,7 @@ export class Week implements Timescale {
 			name: `W${start.weekOfYear}`,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -162,6 +169,7 @@ export class Day implements Timescale {
 			name: `${start.day}`,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -204,6 +212,7 @@ export class Daypart implements Timescale {
 			name: dayPart.name,
 			start,
 			end,
+			timescale: this,
 		};
 	}
 }
@@ -258,6 +267,28 @@ export function* childInstancesOf(
 export function durationOf(timescale: Timescale) {
 	const instance = timescale.instance(now());
 	return instance.end.since(instance.start);
+}
+
+export function timescaleTypeOf(timescale: Timescale): Enums<"timescale_type"> {
+	switch (timescale) {
+		case decade:
+			break;
+		case fiveyear:
+			return "five_year";
+		case year:
+			return "year";
+		case quarter:
+			return "quarter";
+		case month:
+			return "month";
+		case week:
+			return "week";
+		case day:
+			return "day";
+		case daypart:
+			return "daypart";
+	}
+	throw new Error("unknown timescale!");
 }
 
 export const hierarchy = [
