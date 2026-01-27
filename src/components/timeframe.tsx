@@ -6,12 +6,13 @@ import {
 	lte,
 	useLiveQuery,
 } from "@tanstack/solid-db";
-import { For } from "solid-js";
+import { useContext, For } from "solid-js";
 import { tasksCollection } from "~/lib/db";
 import type { Timescale } from "~/lib/timescales";
 import { cn } from "~/lib/utils";
 import { Chip } from "./task";
 import { Button } from "./ui/button";
+import { CurrentTaskContext } from "~/context/current-task";
 
 export function Timeframe(props: {
 	class?: string;
@@ -20,7 +21,6 @@ export function Timeframe(props: {
 	collapsible?: boolean;
 }) {
 	const instance = props.timescale.instance(props.time);
-
 	const timeframeTasks = createCollection(
 		liveQueryCollectionOptions({
 			query: (q) =>
@@ -40,8 +40,8 @@ export function Timeframe(props: {
 					),
 		}),
 	);
-
 	const query = useLiveQuery((q) => q.from({ timeframeTasks }));
+	const currentTaskCtx = useContext(CurrentTaskContext);
 
 	return (
 		<button
@@ -53,7 +53,10 @@ export function Timeframe(props: {
 				props.class,
 			)}
 			onDblClick={() => {
-				console.log("double clicked!");
+				if (!currentTaskCtx) {
+					return;
+				}
+				currentTaskCtx.newChild(instance);
 			}}
 		>
 			<div

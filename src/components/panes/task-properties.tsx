@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
-import { useContext } from "solid-js";
+import { createEffect, Switch, Match, useContext } from "solid-js";
 import {
 	type Collection,
 	createCollection,
@@ -349,15 +349,24 @@ function New(props: { timeframe: TimescaleInstance }) {
 
 export function TaskProperties() {
 	const ctx = useContext(CurrentTaskContext);
-	if (ctx?.selectedTaskId !== undefined) {
-		return <Edit taskId={ctx.selectedTaskId} />;
-	}
-	if (ctx?.newChildTimeframe !== undefined) {
-		return <New timeframe={ctx.newChildTimeframe} />;
-	}
 	return (
 		<div class="flex w-full h-full">
-			<p class="m-auto">No task selected.</p>
+			<Switch
+				fallback={
+					<p class="m-auto">Current Task Provider is not initialized.</p>
+				}
+			>
+				<Match when={ctx !== undefined}>
+					<Switch fallback={<p class="m-auto">No task selected.</p>}>
+						<Match when={ctx?.state.selectedTaskId !== undefined}>
+							<Edit taskId={ctx!.state.selectedTaskId!} />
+						</Match>
+						<Match when={ctx?.state.newChildTimeframe !== undefined}>
+							<New timeframe={ctx!.state.newChildTimeframe!} />
+						</Match>
+					</Switch>
+				</Match>
+			</Switch>
 		</div>
 	);
 }

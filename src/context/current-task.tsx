@@ -1,34 +1,31 @@
-import { createContext, createSignal, type ParentComponent } from "solid-js";
+import { createContext, type ParentComponent } from "solid-js";
+import { createStore } from "solid-js/store";
 import type { TimescaleInstance } from "~/lib/timescales";
 
-export type CurrentTaskState = {
-	selectedTaskId?: number;
-	newChildTimeframe?: TimescaleInstance;
-};
+function currentTaskValue() {
+	const [state, setState] = createStore<{
+		selectedTaskId?: number;
+		newChildTimeframe?: TimescaleInstance;
+	}>({});
+	return {
+		state,
+		selectTask(taskId: number) {
+			setState({ selectedTaskId: taskId });
+		},
+		newChild(timeframe: TimescaleInstance) {
+			setState({ newChildTimeframe: timeframe });
+		},
+	};
+}
 
-export type CurrentTaskActions = {
-	selectTask(taskId: number): void;
-	newChild(timeframe: TimescaleInstance): void;
-};
+export type CurrentTaskValue = ReturnType<typeof currentTaskValue>;
 
-export const CurrentTaskContext = createContext<
-	CurrentTaskState & CurrentTaskActions
->();
+export const CurrentTaskContext = createContext<CurrentTaskValue>();
 
 export const CurrentTaskProvider: ParentComponent = (props) => {
-	const [state, setState] = createSignal<CurrentTaskState>();
+	const value = currentTaskValue();
 	return (
-		<CurrentTaskContext.Provider
-			value={{
-				...state(),
-				selectTask(taskId) {
-					setState({ selectedTaskId: taskId });
-				},
-				newChild(timeframe) {
-					setState({ newChildTimeframe: timeframe });
-				},
-			}}
-		>
+		<CurrentTaskContext.Provider value={value}>
 			{props.children}
 		</CurrentTaskContext.Provider>
 	);
