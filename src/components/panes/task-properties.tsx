@@ -93,8 +93,8 @@ function FormTextField<
 		any,
 		any
 	>
-		? U
-		: never,
+	? U
+	: never,
 >(props: {
 	field: T;
 	transform: (text: string) => __Return;
@@ -316,7 +316,7 @@ function Header(props: {
 	);
 }
 
-function Form(props: { key: keyof CurrentTaskValue["forms"] }) {
+function Form(props: { title: string; key: keyof CurrentTaskValue["forms"] }) {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
 		return (
@@ -337,7 +337,7 @@ function Form(props: { key: keyof CurrentTaskValue["forms"] }) {
 				})}
 				children={(selected) => (
 					<Header
-						title="Creating"
+						title={props.title}
 						start={selected().start}
 						end={selected().end}
 						duration={selected().end.since(selected().start)}
@@ -365,10 +365,10 @@ export function TaskProperties() {
 		<div class="flex flex-col gap-2 w-full h-full p-2">
 			<Switch>
 				<Match when={taskCtx.shown() === "new_child"}>
-					<Form key="creation" />
+					<Form title="Creating task..." key="creation" />
 				</Match>
 				<Match when={taskCtx.shown() === "selected"}>
-					<Form key="edit" />
+					<Form title="Editing task..." key="edit" />
 				</Match>
 				<Match when={taskCtx.shown() === "none"}>
 					<p class="m-auto">No task selected.</p>
