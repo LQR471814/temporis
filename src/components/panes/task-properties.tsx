@@ -19,6 +19,7 @@ import {
 	TextFieldTextArea,
 } from "../ui/text-field";
 import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 
 function FormMultilineText(props: {
 	field: FieldApi<
@@ -305,7 +306,11 @@ function Header(props: {
 	);
 }
 
-function Form(props: { title: string; key: keyof CurrentTaskValue["forms"] }) {
+function Form(props: {
+	title: string;
+	actionTitle: string;
+	key: keyof CurrentTaskValue["forms"];
+}) {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
 		return (
@@ -336,6 +341,14 @@ function Form(props: { title: string; key: keyof CurrentTaskValue["forms"] }) {
 				)}
 			/>
 			<FormFields form={form} />
+			<Button
+				class="w-min"
+				onClick={() => {
+					console.log("submitted");
+				}}
+			>
+				{props.actionTitle}
+			</Button>
 		</>
 	);
 }
@@ -356,10 +369,10 @@ export function TaskProperties() {
 		<div class="flex flex-col gap-2 w-full h-full p-2">
 			<Switch>
 				<Match when={taskCtx.shown() === "new_child"}>
-					<Form title="Creating task..." key="creation" />
+					<Form title="Creating task..." actionTitle="Create" key="creation" />
 				</Match>
 				<Match when={taskCtx.shown() === "selected"}>
-					<Form title="Editing task..." key="edit" />
+					<Form title="Editing task..." actionTitle="Save" key="edit" />
 				</Match>
 				<Match when={taskCtx.shown() === "none"}>
 					<p class="m-auto">No task selected.</p>
