@@ -294,6 +294,26 @@ export function timescaleTypeOf(timescale: Timescale): Enums<"timescale_type"> {
 	throw new Error("unknown timescale!");
 }
 
+export function timescaleFromType(type: Enums<"timescale_type">): Timescale {
+	switch (type) {
+		case "five_year":
+			return fiveyear;
+		case "year":
+			return year;
+		case "quarter":
+			return quarter;
+		case "month":
+			return month;
+		case "week":
+			return week;
+		case "day":
+			return day;
+		case "daypart":
+			return daypart;
+	}
+	throw new Error("unknown timescale!");
+}
+
 export const hierarchy = [
 	decade,
 	fiveyear,

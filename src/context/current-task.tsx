@@ -19,10 +19,7 @@ const __collection = createCollection(
 		query: (q) => q.from({ task: tasksCollection }),
 	}),
 );
-type TaskFields = Omit<
-	typeof __collection extends Collection<infer U> ? U : never,
-	"id"
->;
+type TaskFields = typeof __collection extends Collection<infer U> ? U : never;
 
 function currentTaskValue() {
 	const [shown, setShown] = createSignal<"selected" | "new_child" | "none">(
@@ -31,52 +28,71 @@ function currentTaskValue() {
 	const [selectedTaskId, setSelectedTaskId] = createSignal<
 		number | undefined
 	>();
-	const form = createForm(() => ({
-		defaultValues: {
-			name: "",
-			comments: "",
-			implementation: "hours",
-			status: "pending",
-			optimistic: 0,
-			expected: 0,
-			pessimistic: 0,
-			timeframe_start: Temporal.Now.zonedDateTimeISO(),
-			timescale: "week",
-			parent_id: 1,
-			assigned_to: null,
-			blocked_by: null,
-		} as TaskFields,
-		onSubmit: ({ value }) => {
-			if (selectedTaskId() !== undefined) {
-				console.log("update", value);
-			} else {
-				console.log("create", value);
-			}
-		},
-	}));
+
+	function form() {
+		return createForm(() => ({
+			defaultValues: {
+				id: -1,
+				name: "",
+				comments: "",
+				implementation: "hours",
+				status: "pending",
+				optimistic: 0,
+				expected: 0,
+				pessimistic: 0,
+				timeframe_start: Temporal.Now.zonedDateTimeISO(),
+				timescale: "week",
+				parent_id: -1,
+				assigned_to: null,
+				blocked_by: null,
+			} as TaskFields,
+			onSubmit: ({ value }) => {
+				if (selectedTaskId() !== undefined) {
+					console.log("update", value);
+				} else {
+					console.log("create", value);
+				}
+			},
+		}));
+	}
+	const edit = form();
+	const creation = form();
 
 	return {
 		shown,
 		selectedTaskId,
-		form,
+		forms: { edit, creation },
 		selectTask(taskId: number) {
 			const task = tasksCollection.get(taskId);
 			if (!task) throw new Error("taskId is invalid");
 			batch(() => {
-				form.reset(task);
+				edit.reset(task);
 				setSelectedTaskId(taskId);
 				setShown("selected");
 			});
 		},
 		newChildAt(timeframe: TimescaleInstance) {
 			batch(() => {
-				form.setFieldValue("timescale", timescaleTypeOf(timeframe.timescale));
-				form.setFieldValue("timeframe_start", timeframe.start);
+				creation.setFieldValue(
+					"timescale",
+					timescaleTypeOf(timeframe.timescale),
+				);
+				creation.setFieldMeta("timescale", (prev) => ({
+					...prev,
+					isTouched: true,
+					isDirty: true,
+				}));
+				creation.setFieldValue("timeframe_start", timeframe.start);
+				creation.setFieldMeta("timeframe_start", (prev) => ({
+					...prev,
+					isTouched: true,
+					isDirty: true,
+				}));
 				setShown("new_child");
 			});
 		},
 		resetNewChild() {
-			form.reset();
+			creation.reset();
 		},
 	};
 }

@@ -1,9 +1,15 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
 import type { AnyFieldApi, FieldApi } from "@tanstack/solid-form";
-import { Show, Match, Switch, useContext } from "solid-js";
-import { CurrentTaskContext } from "~/context/current-task";
+import { Match, Switch, useContext } from "solid-js";
+import { timescaleFromType } from "src/lib/timescales";
+import {
+	CurrentTaskContext,
+	type CurrentTaskValue,
+} from "~/context/current-task";
 import { FieldInfo } from "../field-info";
+import { TimeDisplay } from "../time-display";
+import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import {
 	TextField,
@@ -12,7 +18,6 @@ import {
 	TextFieldLabel,
 	TextFieldTextArea,
 } from "../ui/text-field";
-import { Separator } from "../ui/separator";
 
 function FormMultilineText(props: {
 	field: FieldApi<
@@ -88,8 +93,8 @@ function FormTextField<
 		any,
 		any
 	>
-	? U
-	: never,
+		? U
+		: never,
 >(props: {
 	field: T;
 	transform: (text: string) => __Return;
@@ -117,19 +122,11 @@ function FormTextField<
 	);
 }
 
-function Fields() {
-	const ctx = useContext(CurrentTaskContext);
-	if (!ctx) {
-		return (
-			<p class="m-auto">
-				CurrentTaskContext.Provider has not been initialized.
-			</p>
-		);
-	}
-
-	const form = ctx.form;
-
-	const formFields = (
+function FormFields(props: {
+	form: CurrentTaskValue["forms"][keyof CurrentTaskValue["forms"]];
+}) {
+	const form = props.form;
+	return (
 		<>
 			<form.Field
 				name="name"
@@ -151,6 +148,7 @@ function Fields() {
 				name="comments"
 				children={(field) => (
 					<FormMultilineText
+						class="max-w-[400px]"
 						field={field()}
 						label="Comments"
 						placeholder="Comments..."
@@ -285,37 +283,97 @@ function Fields() {
 			/>
 		</>
 	);
+}
 
+function Header(props: {
+	title: string;
+	start: Temporal.ZonedDateTime;
+	end: Temporal.ZonedDateTime;
+	duration: Temporal.Duration;
+}) {
 	return (
-		<Show
-			when={ctx.shown() !== "none"}
-			fallback={<p class="m-auto">No task selected.</p>}
-		>
-			<h1 class="text-lg">
-				<Switch>
-					<Match when={ctx.shown() === "selected"}>Editing task</Match>
-					<Match when={ctx.shown() === "new_child"}>Creating task</Match>
-				</Switch>
-			</h1>
-			<Separator />
-			<div class="flex flex-col flex-wrap gap-2 w-min min-h-[180px] max-h-[800px]">
-				{formFields}
-				<p>item 2</p>
-				<p>item 2</p>
-				<p>item 2</p>
-				<p>item 2</p>
-				<p>item 2</p>
-				<p>item 2</p>
-				<p>item 2</p>
+		<>
+			<h1 class="text-lg">{props.title}</h1>
+			<div class="flex items-center">
+				<TimeDisplay
+					class="pl-0"
+					time={props.start}
+					minDuration={props.duration}
+				/>
+				<svg
+					class="h-3"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+				>
+					<title>Forward Arrow</title>
+					<path d="M1.99974 13.0001L1.9996 11.0002L18.1715 11.0002L14.2218 7.05044L15.636 5.63623L22 12.0002L15.636 18.3642L14.2218 16.9499L18.1716 13.0002L1.99974 13.0001Z"></path>
+				</svg>
+				<TimeDisplay time={props.end} minDuration={props.duration} />
 			</div>
-		</Show>
+			<Separator />
+		</>
+	);
+}
+
+function Form(props: { key: keyof CurrentTaskValue["forms"] }) {
+	const taskCtx = useContext(CurrentTaskContext);
+	if (!taskCtx) {
+		return (
+			<p class="m-auto">
+				CurrentTaskContext.Provider has not been initialized.
+			</p>
+		);
+	}
+	const form = taskCtx.forms[props.key];
+	return (
+		<>
+			<form.Subscribe
+				selector={(state) => ({
+					start: state.values.timeframe_start,
+					end: timescaleFromType(state.values.timescale).instance(
+						state.values.timeframe_start,
+					).end,
+				})}
+				children={(selected) => (
+					<Header
+						title="Creating"
+						start={selected().start}
+						end={selected().end}
+						duration={selected().end.since(selected().start)}
+					/>
+				)}
+			/>
+			<FormFields form={form} />
+		</>
 	);
 }
 
 export function TaskProperties() {
+	const taskCtx = useContext(CurrentTaskContext);
+	if (!taskCtx) {
+		return (
+			<div class="flex w-full h-full">
+				<p class="m-auto">
+					CurrentTaskContext.Provider has not been initialized.
+				</p>
+			</div>
+		);
+	}
+
 	return (
 		<div class="flex flex-col gap-2 w-full h-full p-2">
-			<Fields />
+			<Switch>
+				<Match when={taskCtx.shown() === "new_child"}>
+					<Form key="creation" />
+				</Match>
+				<Match when={taskCtx.shown() === "selected"}>
+					<Form key="edit" />
+				</Match>
+				<Match when={taskCtx.shown() === "none"}>
+					<p class="m-auto">No task selected.</p>
+				</Match>
+			</Switch>
 		</div>
 	);
 }
