@@ -27,17 +27,17 @@ function RouteComponent() {
 					<Separator class="h-0" />
 					<ResizablePanel initialSize={1}>
 						<Resizable orientation="horizontal">
-							<ResizablePanel initialSize={0.15} class="overflow-hidden">
+							<ResizablePanel initialSize={0.15} class="overflow-auto">
 								<VerticalTimeframes />
 							</ResizablePanel>
 							<ResizableHandle withHandle />
-							<ResizablePanel initialSize={0.85} class="overflow-hidden">
+							<ResizablePanel initialSize={0.85} class="overflow-auto">
 								<Resizable orientation="vertical">
-									<ResizablePanel initialSize={0.5} class="overflow-hidden">
+									<ResizablePanel initialSize={0.5} class="overflow-auto">
 										<HorizontalControlled />
 									</ResizablePanel>
 									<ResizableHandle withHandle />
-									<ResizablePanel initialSize={0.5} class="overflow-hidden">
+									<ResizablePanel initialSize={0.5} class="overflow-auto">
 										<TaskProperties />
 									</ResizablePanel>
 								</Resizable>
