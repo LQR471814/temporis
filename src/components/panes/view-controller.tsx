@@ -1,9 +1,9 @@
-import { createMemo, Show, useContext } from "solid-js";
+import { useContext } from "solid-js";
 import { Button } from "~/components/ui/button";
 import * as Select from "~/components/ui/select";
-import { Separator } from "~/components/ui/separator";
 import { useCurrentTime, ViewContext } from "~/context/view";
 import * as timescales from "~/lib/timescales";
+import { TimeDisplay } from "../time-display";
 
 const options = timescales.hierarchy
 	.slice(0, timescales.hierarchy.length - 1)
@@ -12,9 +12,6 @@ const options = timescales.hierarchy
 export function ViewController() {
 	const ctx = useContext(ViewContext);
 	const currentTime = useCurrentTime();
-	const startOfYear = createMemo(() =>
-		currentTime().with({ month: 1, day: 1 }),
-	);
 	if (!ctx) {
 		return <p>ViewContext.Provider is missing</p>;
 	}
@@ -94,53 +91,7 @@ export function ViewController() {
 					<path d="M18.5374 19.5674C16.7844 21.0831 14.4993 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 14.1361 21.3302 16.1158 20.1892 17.7406L17 12H20C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C14.1502 20 16.1022 19.1517 17.5398 17.7716L18.5374 19.5674Z"></path>
 				</svg>
 			</Button>
-			<div class="flex px-2 text-sm">
-				<div class="my-auto flex gap-2">
-					<span class="m-0">{currentTime().year}</span>
-					<Show
-						when={
-							Temporal.Duration.compare(
-								ctx.timescaleDuration(),
-								{ years: 1 },
-								{ relativeTo: startOfYear() },
-							) < 0
-						}
-					>
-						<Separator class="h-5" orientation="vertical" />
-						<span class="m-0">
-							{Intl.DateTimeFormat(undefined, { month: "long" }).format(
-								new Date(currentTime().toInstant().toString()),
-							)}
-						</span>
-					</Show>
-					<Show
-						when={
-							Temporal.Duration.compare(
-								ctx.timescaleDuration(),
-								{ weeks: 1 },
-								{ relativeTo: startOfYear() },
-							) < 0
-						}
-					>
-						<Separator class="h-5" orientation="vertical" />
-						<span class="m-0">{currentTime().day}</span>
-					</Show>
-					<Show
-						when={
-							Temporal.Duration.compare(
-								ctx.timescaleDuration(),
-								{ days: 1 },
-								{ relativeTo: startOfYear() },
-							) < 0
-						}
-					>
-						<Separator class="h-5" orientation="vertical" />
-						<span class="m-0">
-							{currentTime().hour}:{currentTime().minute}
-						</span>
-					</Show>
-				</div>
-			</div>
+			<TimeDisplay time={currentTime()} minDuration={ctx.timescaleDuration()} />
 		</div>
 	);
 }

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import { VerticalTimeframes } from "~/components/vertical";
+import { VerticalTimeframes } from "~/components/panes/vertical";
 
 export const Route = createFileRoute("/test/vertical")({
 	component: RouteComponent,

@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/solid-router";
-import * as HorizontalTimeframes from "~/components/horizontal";
+import { HorizontalControlled } from "src/components/panes/horizontal-controlled";
 import { TaskProperties } from "~/components/panes/task-properties";
 import { VerticalTimeframes } from "~/components/panes/vertical";
 import { ViewController } from "~/components/panes/view-controller";
@@ -34,7 +34,7 @@ function RouteComponent() {
 							<ResizablePanel initialSize={0.85} class="overflow-hidden">
 								<Resizable orientation="vertical">
 									<ResizablePanel initialSize={0.5} class="overflow-hidden">
-										<HorizontalTimeframes.Controlled />
+										<HorizontalControlled />
 									</ResizablePanel>
 									<ResizableHandle withHandle />
 									<ResizablePanel initialSize={0.5} class="overflow-hidden">
