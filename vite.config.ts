@@ -19,6 +19,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
+			src: join(__dirname, "./src"),
 			"~": join(__dirname, "./src"),
 		},
 	},

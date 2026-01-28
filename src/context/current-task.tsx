@@ -1,19 +1,82 @@
-import { createContext, type ParentComponent } from "solid-js";
-import { createStore } from "solid-js/store";
-import type { TimescaleInstance } from "~/lib/timescales";
+import {
+	type Collection,
+	createCollection,
+	liveQueryCollectionOptions,
+} from "@tanstack/solid-db";
+import { createForm } from "@tanstack/solid-form";
+import {
+	batch,
+	createContext,
+	createSignal,
+	type ParentComponent,
+} from "solid-js";
+import { tasksCollection } from "src/lib/db";
+import { type TimescaleInstance, timescaleTypeOf } from "~/lib/timescales";
+
+// TODO: improve this hack!
+const __collection = createCollection(
+	liveQueryCollectionOptions({
+		query: (q) => q.from({ task: tasksCollection }),
+	}),
+);
+type TaskFields = Omit<
+	typeof __collection extends Collection<infer U> ? U : never,
+	"id"
+>;
 
 function currentTaskValue() {
-	const [state, setState] = createStore<{
-		selectedTaskId?: number;
-		newChildTimeframe?: TimescaleInstance;
-	}>({});
-	return {
-		state,
-		selectTask(taskId: number) {
-			setState({ selectedTaskId: taskId });
+	const [shown, setShown] = createSignal<"selected" | "new_child" | "none">(
+		"none",
+	);
+	const [selectedTaskId, setSelectedTaskId] = createSignal<
+		number | undefined
+	>();
+	const form = createForm(() => ({
+		defaultValues: {
+			name: "",
+			comments: "",
+			implementation: "hours",
+			status: "pending",
+			optimistic: 0,
+			expected: 0,
+			pessimistic: 0,
+			timeframe_start: Temporal.Now.zonedDateTimeISO(),
+			timescale: "week",
+			parent_id: 1,
+			assigned_to: null,
+			blocked_by: null,
+		} as TaskFields,
+		onSubmit: ({ value }) => {
+			if (selectedTaskId() !== undefined) {
+				console.log("update", value);
+			} else {
+				console.log("create", value);
+			}
 		},
-		newChild(timeframe: TimescaleInstance) {
-			setState({ newChildTimeframe: timeframe });
+	}));
+
+	return {
+		shown,
+		selectedTaskId,
+		form,
+		selectTask(taskId: number) {
+			const task = tasksCollection.get(taskId);
+			if (!task) throw new Error("taskId is invalid");
+			batch(() => {
+				form.reset(task);
+				setSelectedTaskId(taskId);
+				setShown("selected");
+			});
+		},
+		newChildAt(timeframe: TimescaleInstance) {
+			batch(() => {
+				form.setFieldValue("timescale", timescaleTypeOf(timeframe.timescale));
+				form.setFieldValue("timeframe_start", timeframe.start);
+				setShown("new_child");
+			});
+		},
+		resetNewChild() {
+			form.reset();
 		},
 	};
 }

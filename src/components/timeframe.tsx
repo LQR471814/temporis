@@ -6,13 +6,13 @@ import {
 	lte,
 	useLiveQuery,
 } from "@tanstack/solid-db";
-import { useContext, For } from "solid-js";
+import { For, useContext } from "solid-js";
+import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
 import type { Timescale } from "~/lib/timescales";
 import { cn } from "~/lib/utils";
 import { Chip } from "./task";
 import { Button } from "./ui/button";
-import { CurrentTaskContext } from "~/context/current-task";
 
 export function Timeframe(props: {
 	class?: string;
@@ -56,7 +56,7 @@ export function Timeframe(props: {
 				if (!currentTaskCtx) {
 					return;
 				}
-				currentTaskCtx.newChild(instance);
+				currentTaskCtx.newChildAt(instance);
 			}}
 		>
 			<div
@@ -70,6 +70,12 @@ export function Timeframe(props: {
 				<Button
 					class="px-1 py-0 h-min aspect-square text-primary/30"
 					variant="ghost"
+					onClick={() => {
+						if (!currentTaskCtx) {
+							return;
+						}
+						currentTaskCtx.newChildAt(instance);
+					}}
 				>
 					＋
 				</Button>
