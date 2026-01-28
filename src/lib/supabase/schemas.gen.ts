@@ -11,12 +11,6 @@ export const publicImplementationTypeSchema = z.union([
   z.literal("hours"),
 ]);
 
-export const publicTaskStatusSchema = z.union([
-  z.literal("pending"),
-  z.literal("completed"),
-  z.literal("dropped"),
-]);
-
 export const publicTimescaleTypeSchema = z.union([
   z.literal("all_time"),
   z.literal("five_year"),
@@ -97,7 +91,6 @@ export const publicExecutorOccupiedRelationshipsSchema = z.tuple([
 
 export const publicTaskRowSchema = z.object({
   assigned_to: z.number().nullable(),
-  blocked_by: z.number().nullable(),
   comments: z.string(),
   expected: z.number(),
   id: z.number(),
@@ -106,14 +99,12 @@ export const publicTaskRowSchema = z.object({
   optimistic: z.number(),
   parent_id: z.number(),
   pessimistic: z.number(),
-  status: publicTaskStatusSchema,
   timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)),
   timescale: publicTimescaleTypeSchema,
 });
 
 export const publicTaskInsertSchema = z.object({
   assigned_to: z.number().optional().nullable(),
-  blocked_by: z.number().optional().nullable(),
   comments: z.string(),
   expected: z.number(),
   id: z.number().optional(),
@@ -122,14 +113,12 @@ export const publicTaskInsertSchema = z.object({
   optimistic: z.number(),
   parent_id: z.number(),
   pessimistic: z.number(),
-  status: publicTaskStatusSchema.optional(),
   timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)),
   timescale: publicTimescaleTypeSchema,
 });
 
 export const publicTaskUpdateSchema = z.object({
   assigned_to: z.number().optional().nullable(),
-  blocked_by: z.number().optional().nullable(),
   comments: z.string().optional(),
   expected: z.number().optional(),
   id: z.number().optional(),
@@ -138,7 +127,6 @@ export const publicTaskUpdateSchema = z.object({
   optimistic: z.number().optional(),
   parent_id: z.number().optional(),
   pessimistic: z.number().optional(),
-  status: publicTaskStatusSchema.optional(),
   timeframe_start: z.string().transform((v) => Temporal.Instant.from(v).toZonedDateTimeISO(Intl.DateTimeFormat().resolvedOptions().timeZone)).optional(),
   timescale: publicTimescaleTypeSchema.optional(),
 });
@@ -149,13 +137,6 @@ export const publicTaskRelationshipsSchema = z.tuple([
     columns: z.tuple([z.literal("assigned_to")]),
     isOneToOne: z.literal(false),
     referencedRelation: z.literal("executor"),
-    referencedColumns: z.tuple([z.literal("id")]),
-  }),
-  z.object({
-    foreignKeyName: z.literal("task_blocked_by_task_id_fk"),
-    columns: z.tuple([z.literal("blocked_by")]),
-    isOneToOne: z.literal(false),
-    referencedRelation: z.literal("task"),
     referencedColumns: z.tuple([z.literal("id")]),
   }),
   z.object({
@@ -170,7 +151,6 @@ export const publicTaskRelationshipsSchema = z.tuple([
 export type PublicImplementationType = z.infer<
   typeof publicImplementationTypeSchema
 >;
-export type PublicTaskStatus = z.infer<typeof publicTaskStatusSchema>;
 export type PublicTimescaleType = z.infer<typeof publicTimescaleTypeSchema>;
 export type Json = z.infer<typeof jsonSchema>;
 export type GraphqlPublicGraphqlArgs = z.infer<

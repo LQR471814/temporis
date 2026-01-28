@@ -1,6 +1,6 @@
 import {
 	type AnyPgColumn,
-	integer,
+	bigint,
 	pgEnum,
 	pgTable,
 	real,
@@ -24,32 +24,21 @@ export const implementation_type = pgEnum("implementation_type", [
 	"hours",
 ]);
 
-export const task_status = pgEnum("task_status", [
-	"pending",
-	"completed",
-	"dropped",
-]);
-
 export const taskTable = pgTable("task", {
-	id: integer().primaryKey().generatedByDefaultAsIdentity(),
+	id: bigint({ mode: "number" }).primaryKey().generatedByDefaultAsIdentity(),
 	name: varchar({ length: 256 }).notNull(),
 	comments: varchar().notNull(),
 
-	status: task_status().notNull().default("pending"),
 	timescale: timescale_type().notNull(),
 	timeframe_start: timestamp().notNull(),
 
-	assigned_to: integer().references(() => executorTable.id),
-	parent_id: integer()
+	assigned_to: bigint({ mode: "number" }).references(() => executorTable.id),
+	parent_id: bigint({ mode: "number" })
 		.notNull()
 		.references((): AnyPgColumn => taskTable.id, {
 			onUpdate: "cascade",
 			onDelete: "cascade",
 		}),
-	blocked_by: integer().references((): AnyPgColumn => taskTable.id, {
-		onUpdate: "cascade",
-		onDelete: "set null",
-	}),
 
 	optimistic: real().notNull(),
 	expected: real().notNull(),
@@ -58,13 +47,13 @@ export const taskTable = pgTable("task", {
 });
 
 export const executorTable = pgTable("executor", {
-	id: integer().primaryKey().generatedAlwaysAsIdentity(),
+	id: bigint({ mode: "number" }).primaryKey().generatedAlwaysAsIdentity(),
 	name: varchar().notNull(),
 	comments: varchar().notNull(),
 });
 
 export const executorOccupied = pgTable("executor_occupied", {
-	executor_id: integer()
+	executor_id: bigint({ mode: "number" })
 		.notNull()
 		.references(() => executorTable.id),
 	start: timestamp().notNull(),
