@@ -1,69 +1,63 @@
-import { Search as CoreSearch } from "@kobalte/core/search";
-import { RiDeviceRestartLine, RiSystemSearchLine } from "solid-icons/ri";
+// biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
+
+import type { Fn, Pipe, Tuples, Unions } from "hotscript";
+import {
+	Combobox,
+	ComboboxItem,
+	ComboboxTrigger,
+	ComboboxContent,
+	ComboboxInput,
+} from "~/components/ui/combobox";
+import { createFilter } from "@kobalte/core";
 import { createSignal } from "solid-js";
-import "./style.css";
+
+interface IsValidLabel<T extends Record<string, unknown>> extends Fn {
+	return: T[this["arg0"]] extends string | number | Element ? true : false;
+}
 
 export function Search<
-	T,
-	Field extends
-	| keyof Exclude<T, null>
-	| ((option: Exclude<T, null>) => string | number)
-	| undefined,
-	FieldLabel extends
-	| keyof Exclude<T, null>
-	| ((option: Exclude<T, null>) => string)
-	| undefined,
+	T extends Record<string, unknown>,
+	IDField extends keyof T,
+	LabelField extends Pipe<
+		keyof T,
+		[Unions.ToTuple, Tuples.Filter<IsValidLabel<T>>, Tuples.ToUnion]
+	>,
 >(props: {
-	field: Field;
-	fieldLabel: FieldLabel;
-	label(val: T): string;
-	query(text: string): T[];
+	name: string;
+	selected: T;
+	options: T[];
+	idField: IDField;
+	labelField: LabelField;
 	onChange(result: T | null): void;
 }) {
-	const [options, setOptions] = createSignal<T[]>([]);
+	const filter = createFilter({ sensitivity: "base", ignorePunctuation: true });
+	const [options, setOptions] = createSignal(props.options);
+	const onInputChange = (value: string) => {
+		setOptions(
+			props.options.filter((option) =>
+				filter.contains(option[props.labelField as any] as any, value),
+			),
+		);
+	};
 	return (
-		<CoreSearch
-			triggerMode="focus"
+		<Combobox
+			name={props.name}
+			value={props.selected}
 			options={options()}
-			onInputChange={(query) => setOptions(props.query(query))}
+			optionValue={props.idField}
+			optionLabel={props.labelField as any}
+			onInputChange={onInputChange}
 			onChange={props.onChange}
-			optionValue={props.field}
-			optionLabel={props.fieldLabel}
-			placeholder="Search an emoji…"
 			itemComponent={(p) => (
-				<CoreSearch.Item item={p.item} class="search__item">
-					<CoreSearch.ItemLabel>
-						{props.label(p.item.rawValue)}
-					</CoreSearch.ItemLabel>
-				</CoreSearch.Item>
+				<ComboboxItem item={p.item}>
+					{p.item.rawValue[props.labelField as any] as any}
+				</ComboboxItem>
 			)}
 		>
-			<CoreSearch.Control class="search__control" aria-label="Emoji">
-				<CoreSearch.Indicator
-					class="search__indicator"
-					loadingComponent={
-						<CoreSearch.Icon class="load__icon">
-							<RiDeviceRestartLine class="spin__icon" />
-						</CoreSearch.Icon>
-					}
-				>
-					<CoreSearch.Icon class="search__icon">
-						<RiSystemSearchLine class="center__icon" />
-					</CoreSearch.Icon>
-				</CoreSearch.Indicator>
-				<CoreSearch.Input class="search__input" />
-			</CoreSearch.Control>
-			<CoreSearch.Portal>
-				<CoreSearch.Content
-					class="search__content"
-					onCloseAutoFocus={(e) => e.preventDefault()}
-				>
-					<CoreSearch.Listbox class="search__listbox" />
-					<CoreSearch.NoResult class="search__no_result">
-						No results found
-					</CoreSearch.NoResult>
-				</CoreSearch.Content>
-			</CoreSearch.Portal>
-		</CoreSearch>
+			<ComboboxTrigger>
+				<ComboboxInput />
+			</ComboboxTrigger>
+			<ComboboxContent />
+		</Combobox>
 	);
 }

@@ -121,6 +121,9 @@ function FormTextField<
 				onInput={(e) =>
 					props.field.handleChange(props.transform(e.currentTarget.value))
 				}
+				value={
+					Number.isNaN(props.field.state.value) ? "" : props.field.state.value
+				}
 			/>
 			<FieldInfo field={props.field} />
 		</TextField>
@@ -336,7 +339,6 @@ function Header(props: {
 	duration: Temporal.Duration;
 	timescale: Timescale;
 }) {
-	createEffect(() => { });
 	return (
 		<>
 			<h1 class="text-lg">{props.title}</h1>
@@ -387,6 +389,7 @@ function Form(props: {
 			<Button
 				class="w-min"
 				onClick={() => {
+					form.validateAllFields("submit");
 					console.log("submitted");
 				}}
 			>
