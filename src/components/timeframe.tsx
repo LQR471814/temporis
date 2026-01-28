@@ -19,6 +19,7 @@ export function Timeframe(props: {
 	timescale: Timescale;
 	time: Temporal.ZonedDateTime;
 	collapsible?: boolean;
+	accented?: boolean;
 }) {
 	const instance = props.timescale.instance(props.time);
 	const timeframeTasks = createCollection(
@@ -66,7 +67,14 @@ export function Timeframe(props: {
 					"transition-colors group-hover:border-primary/30": true,
 				}}
 			>
-				<p class="text-sm">{instance.name}</p>
+				<p
+					classList={{
+						"text-sm": true,
+						"font-bold": props.accented,
+					}}
+				>
+					{instance.name}
+				</p>
 				<Button
 					class="px-1 py-0 h-min aspect-square text-primary/30"
 					variant="ghost"

@@ -1,7 +1,7 @@
 import { createMemo, For } from "solid-js";
 import { Timeframe } from "~/components/timeframe";
 import { childInstancesOf, type Timescale } from "~/lib/timescales";
-import { cn } from "~/lib/utils";
+import { cn, now } from "~/lib/utils";
 
 export function Horizontal(props: {
 	parent: Timescale;
@@ -9,6 +9,7 @@ export function Horizontal(props: {
 	now: Temporal.ZonedDateTime;
 	class?: string;
 }) {
+	const currentInstance = createMemo(() => props.child.instance(now()));
 	const instances = createMemo(() => [
 		...childInstancesOf(props.parent, props.child, props.now),
 	]);
@@ -16,7 +17,15 @@ export function Horizontal(props: {
 		<div class={cn("flex gap-1 h-full w-full", props.class)}>
 			<For each={instances()}>
 				{(start) => (
-					<Timeframe class="flex-1" timescale={props.child} time={start} />
+					<Timeframe
+						class="flex-1"
+						timescale={props.child}
+						time={start}
+						accented={
+							Temporal.ZonedDateTime.compare(start, currentInstance().start) ===
+							0
+						}
+					/>
 				)}
 			</For>
 		</div>
