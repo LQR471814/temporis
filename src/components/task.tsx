@@ -18,10 +18,11 @@ export function Chip(props: {
 		return ""
 	});
 	return (
-		<div class="flex gap-2 rounded-md border border-muted shadow-sm">
+		<div class="flex items-center gap-2 rounded-md border border-muted shadow-sm px-2">
 			<div
 				classList={{
-					"p-2": true,
+					"aspect-square": true,
+					"p-1": true,
 					"rounded-full": true,
 					[color()]: true,
 				}}
