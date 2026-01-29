@@ -81,7 +81,10 @@ function currentTaskValue() {
 					isTouched: true,
 					isDirty: true,
 				}));
-				creation.setFieldValue("timeframe_start", timeframe.start.toInstant().toString());
+				creation.setFieldValue(
+					"timeframe_start",
+					timeframe.start.toInstant().toString(),
+				);
 				creation.setFieldMeta("timeframe_start", (prev) => ({
 					...prev,
 					isTouched: true,
@@ -106,7 +109,7 @@ function currentTaskValue() {
 				duration: 3000,
 			});
 		},
-		saveTask() { },
+		saveTask() {},
 	};
 }
 

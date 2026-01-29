@@ -1,15 +1,15 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
+import { createFilter } from "@kobalte/core";
 import type { Fn, Pipe, Tuples, Unions } from "hotscript";
+import { createSignal } from "solid-js";
 import {
 	Combobox,
-	ComboboxItem,
-	ComboboxTrigger,
 	ComboboxContent,
 	ComboboxInput,
+	ComboboxItem,
+	ComboboxTrigger,
 } from "~/components/ui/combobox";
-import { createFilter } from "@kobalte/core";
-import { createSignal } from "solid-js";
 
 interface IsValidLabel<T extends Record<string, unknown>> extends Fn {
 	return: T[this["arg0"]] extends string | number | Element ? true : false;

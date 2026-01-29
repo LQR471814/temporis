@@ -5,8 +5,8 @@ import {
 	type RoutePaths,
 } from "@tanstack/solid-router";
 import { createEffect } from "solid-js";
-import type { routeTree } from "~/routeTree.gen";
 import { Toaster } from "~/components/ui/toast";
+import type { routeTree } from "~/routeTree.gen";
 
 function NavLink(props: {
 	to: RoutePaths<typeof routeTree>;

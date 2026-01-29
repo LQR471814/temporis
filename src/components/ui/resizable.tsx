@@ -15,10 +15,7 @@ const Resizable = <T extends ValidComponent = "div">(
 	const [, rest] = splitProps(props as ResizableProps, ["class"]);
 	return (
 		<ResizablePrimitive
-			class={cn(
-				"flex data-[orientation=vertical]:flex-col",
-				props.class,
-			)}
+			class={cn("flex data-[orientation=vertical]:flex-col", props.class)}
 			{...rest}
 		/>
 	);

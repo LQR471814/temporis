@@ -8,7 +8,9 @@ export function FieldInfo(props: FieldInfoProps) {
 	return (
 		<>
 			{props.field.state.meta.isTouched && !props.field.state.meta.isValid ? (
-				<em class="text-red-500 text-sm">{props.field.state.meta.errors.join(",")}</em>
+				<em class="text-red-500 text-sm">
+					{props.field.state.meta.errors.join(",")}
+				</em>
 			) : null}
 			{props.field.state.meta.isValidating ? "Validating..." : null}
 		</>

@@ -6,6 +6,7 @@ import { createMemo, Match, Switch, useContext } from "solid-js";
 import { ROOT_ID } from "src/lib/constants";
 import { tasksCollection } from "src/lib/db";
 import { type Timescale, timescaleFromType } from "src/lib/timescales";
+import { asInstant, currentTz } from "src/lib/utils";
 import {
 	CurrentTaskContext,
 	type CurrentTaskValue,
@@ -24,7 +25,6 @@ import {
 	TextFieldLabel,
 	TextFieldTextArea,
 } from "../ui/text-field";
-import { currentTz, asInstant } from "src/lib/utils";
 
 function FormMultilineText(props: {
 	field: FieldApi<
@@ -100,8 +100,8 @@ function FormTextField<
 		any,
 		any
 	>
-	? U
-	: never,
+		? U
+		: never,
 >(props: {
 	field: T;
 	transform: (text: string) => __Return;

@@ -2,7 +2,7 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createMemo, For, useContext } from "solid-js";
 import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
-import { timescaleFromType, type Timescale } from "~/lib/timescales";
+import { type Timescale, timescaleFromType } from "~/lib/timescales";
 import { asInstant, cn, currentTz } from "~/lib/utils";
 import { Chip } from "./task";
 import { Button } from "./ui/button";

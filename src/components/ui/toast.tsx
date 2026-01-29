@@ -1,11 +1,12 @@
-import type { JSX, ValidComponent } from "solid-js";
-import { Match, splitProps, Switch } from "solid-js";
-import { Portal } from "solid-js/web";
+// biome-ignore-all lint/style/noNonNullAssertion: this is ok
 
 import type { PolymorphicProps } from "@kobalte/core/polymorphic";
 import * as ToastPrimitive from "@kobalte/core/toast";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
+import type { JSX, ValidComponent } from "solid-js";
+import { Match, Switch, splitProps } from "solid-js";
+import { Portal } from "solid-js/web";
 
 import { cn } from "~/lib/utils";
 
@@ -57,7 +58,7 @@ const Toaster = <T extends ValidComponent = "ol">(
 
 type ToastRootProps<T extends ValidComponent = "li"> =
 	ToastPrimitive.ToastRootProps<T> &
-	VariantProps<typeof toastVariants> & { class?: string | undefined };
+		VariantProps<typeof toastVariants> & { class?: string | undefined };
 
 const Toast = <T extends ValidComponent = "li">(
 	props: PolymorphicProps<T, ToastRootProps<T>>,
@@ -117,10 +118,7 @@ const ToastTitle = <T extends ValidComponent = "div">(
 ) => {
 	const [local, others] = splitProps(props as ToastTitleProps, ["class"]);
 	return (
-		<ToastPrimitive.Title
-			class={cn("text-sm", local.class)}
-			{...others}
-		/>
+		<ToastPrimitive.Title class={cn("text-sm", local.class)} {...others} />
 	);
 };
 

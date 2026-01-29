@@ -23,7 +23,7 @@ const joinedTasks = createCollection(
 				.innerJoin({ parent: tasksCollection }, ({ task, parent }) =>
 					eq(task.parent_id, parent.id),
 				)
-				.select(({ task, executor,  parent }) => ({
+				.select(({ task, executor, parent }) => ({
 					name: task.name,
 					comments: task.comments,
 					assigned: executor?.name ?? "-",

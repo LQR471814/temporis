@@ -1,11 +1,11 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { taskTable } from "./schema";
 import { ROOT_ID } from "../src/lib/constants";
+import { taskTable } from "./schema";
 
 const sql = postgres(
 	process.env.DB_URL ??
-	"postgresql://postgres:postgres@127.0.0.1:54322/postgres",
+		"postgresql://postgres:postgres@127.0.0.1:54322/postgres",
 );
 const db = drizzle({ client: sql });
 
