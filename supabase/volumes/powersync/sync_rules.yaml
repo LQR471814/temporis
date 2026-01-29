@@ -1,0 +1,36 @@
+# PowerSync Sync Rules
+# Documentation: https://docs.powersync.com/usage/sync-rules
+
+bucket_definitions:
+  # Global bucket - sync all data to all authenticated users
+  # Adjust filtering based on your authorization requirements
+  - name: global
+    data:
+      # Task table - hierarchical task management
+      - SELECT
+          id,
+          name,
+          comments,
+          timescale,
+          timeframe_start,
+          assigned_to,
+          parent_id,
+          optimistic,
+          expected,
+          pessimistic,
+          implementation
+        FROM task
+
+      # Executor table - people/resources that execute tasks
+      - SELECT
+          id,
+          name,
+          comments
+        FROM executor
+
+      # Executor occupied time slots
+      - SELECT
+          executor_id,
+          start,
+          "end"
+        FROM executor_occupied

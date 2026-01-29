@@ -1,0 +1,40 @@
+# PowerSync configuration for Supabase self-hosted
+# https://docs.powersync.com/self-hosting/local-development
+
+# Telemetry settings
+telemetry:
+  disable_telemetry_sharing: false
+
+# Replication connection to Supabase Postgres
+replication:
+  # Connection to the Postgres database for replication
+  connections:
+    - type: postgresql
+      uri: !env PS_PG_URI
+      # Required for logical replication
+      slot_name: powersync_slot
+      publication_name: powersync_pub
+
+# MongoDB storage for sync bucket state
+storage:
+  type: mongodb
+  uri: !env PS_MONGO_URI
+
+# API port
+port: !env PS_PORT
+
+# Sync rules - define what data to sync
+sync_rules:
+  path: /config/sync_rules.yaml
+
+# Client authentication using Supabase
+client_auth:
+  # Enable Supabase JWT verification
+  supabase: true
+  # Supabase project URL for JWKS
+  supabase_jwt_secret: !env PS_SUPABASE_JWT_SECRET
+
+# API authentication for admin endpoints
+api:
+  tokens:
+    - !env PS_API_TOKEN

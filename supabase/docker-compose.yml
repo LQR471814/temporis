@@ -535,5 +535,73 @@ services:
         "/app/bin/migrate && /app/bin/supavisor eval \"$$(cat /etc/pooler/pooler.exs)\" && /app/bin/server"
       ]
 
+  # PowerSync MongoDB for sync bucket storage
+  powersync-mongo:
+    container_name: powersync-mongo
+    image: mongo:7.0
+    restart: unless-stopped
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - powersync-mongo-data:/data/db
+    healthcheck:
+      test: |
+        mongosh --quiet --eval "
+          try {
+            rs.status().ok
+          } catch(e) {
+            rs.initiate({_id: 'rs0', members: [{_id: 0, host: 'powersync-mongo:27017'}]});
+            1;
+          }
+        " | grep -q 1
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # PowerSync Service for local-first sync
+  powersync:
+    container_name: powersync
+    image: journeyapps/powersync-service:latest
+    restart: unless-stopped
+    ports:
+      - ${POWERSYNC_PORT:-8081}:8080
+    volumes:
+      - ./volumes/powersync/powersync.yaml:/config/powersync.yaml:ro,z
+      - ./volumes/powersync/sync_rules.yaml:/config/sync_rules.yaml:ro,z
+    depends_on:
+      db:
+        condition: service_healthy
+      powersync-mongo:
+        condition: service_healthy
+    environment:
+      # PowerSync configuration file path
+      POWERSYNC_CONFIG_PATH: /config/powersync.yaml
+      # PostgreSQL connection for replication
+      PS_PG_URI: postgresql://postgres:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable
+      # MongoDB connection for sync storage
+      PS_MONGO_URI: mongodb://powersync-mongo:27017/powersync
+      # API port
+      PS_PORT: 8080
+      # Supabase JWT secret for client auth
+      PS_SUPABASE_JWT_SECRET: ${JWT_SECRET}
+      # Admin API token
+      PS_API_TOKEN: ${POWERSYNC_API_TOKEN:-powersync-dev-token}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-sSfL",
+          "--head",
+          "-o",
+          "/dev/null",
+          "http://localhost:8080/probes/liveness"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 volumes:
   db-config:
+  powersync-mongo-data:
