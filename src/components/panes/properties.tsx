@@ -409,7 +409,7 @@ function Form(props: {
 	);
 }
 
-export function TaskProperties() {
+export function Properties() {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
 		return (

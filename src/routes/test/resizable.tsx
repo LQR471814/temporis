@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { HorizontalControlled } from "src/components/panes/horizontal-controlled";
-import { TaskProperties } from "~/components/panes/task-properties";
+import { Properties } from "src/components/panes/properties";
 import { VerticalTimeframes } from "~/components/panes/vertical";
 import { ViewController } from "~/components/panes/view-controller";
 import { Separator } from "~/components/ui/separator";
@@ -26,7 +26,7 @@ function RouteComponent() {
 						<div class="flex flex-col flex-1">
 							<HorizontalControlled />
 							<Separator />
-							<TaskProperties />
+							<Properties />
 						</div>
 					</div>
 				</div>
