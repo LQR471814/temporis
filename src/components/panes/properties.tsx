@@ -2,11 +2,11 @@
 
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import type { AnyFieldApi, FieldApi } from "@tanstack/solid-form";
-import { createMemo, Match, Switch, useContext } from "solid-js";
+import { createMemo, Show, Match, Switch, useContext } from "solid-js";
 import { ROOT_ID } from "src/lib/constants";
 import { tasksCollection } from "src/lib/db";
 import { type Timescale, timescaleFromType } from "src/lib/timescales";
-import { asInstant, currentTz } from "src/lib/utils";
+import { asInstant, cn, currentTz } from "src/lib/utils";
 import {
 	CurrentTaskContext,
 	type CurrentTaskValue,
@@ -100,8 +100,8 @@ function FormTextField<
 		any,
 		any
 	>
-		? U
-		: never,
+	? U
+	: never,
 >(props: {
 	field: T;
 	transform: (text: string) => __Return;
@@ -355,6 +355,11 @@ function Form(props: {
 	key: keyof CurrentTaskValue["forms"];
 	actionTitle: string;
 	onAction(): void;
+	secondaryAction?: {
+		class?: string;
+		title: string;
+		onAction(): void;
+	};
 }) {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
@@ -392,19 +397,29 @@ function Form(props: {
 				)}
 			/>
 			<FormFields form={form} />
-			<Button
-				class="w-min"
-				onClick={async () => {
-					const results = await form.validateAllFields("submit");
-					const valid = results.length === 0;
-					if (!valid) {
-						return;
-					}
-					props.onAction();
-				}}
-			>
-				{props.actionTitle}
-			</Button>
+			<div class="flex gap-1">
+				<Button
+					class="w-min"
+					onClick={async () => {
+						const results = await form.validateAllFields("submit");
+						const valid = results.length === 0;
+						if (!valid) {
+							return;
+						}
+						props.onAction();
+					}}
+				>
+					{props.actionTitle}
+				</Button>
+				<Show when={!!props.secondaryAction}>
+					<Button
+						class={cn("w-min", props.secondaryAction?.class)}
+						onClick={props.secondaryAction?.onAction}
+					>
+						{props.secondaryAction?.title}
+					</Button>
+				</Show>
+			</div>
 		</>
 	);
 }
@@ -420,7 +435,6 @@ export function Properties() {
 			</div>
 		);
 	}
-
 	return (
 		<div class="flex flex-col gap-2 w-full h-full p-2">
 			<Switch>
@@ -438,6 +452,11 @@ export function Properties() {
 						actionTitle="Save"
 						key="edit"
 						onAction={taskCtx.saveTask}
+						secondaryAction={{
+							class: "bg-red-600 hover:bg-red-500",
+							title: "Delete",
+							onAction: taskCtx.deleteTask,
+						}}
 					/>
 				</Match>
 				<Match when={taskCtx.shown() === "none"}>

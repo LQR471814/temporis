@@ -118,6 +118,16 @@ function currentTaskValue() {
 				duration: 3000,
 			});
 		},
+		deleteTask() {
+			tasksCollection.delete(edit.state.values.id);
+			showToast({
+				title: `Task deleted: ${edit.state.values.name}`,
+				variant: "success",
+				duration: 3000,
+			})
+			edit.reset()
+			setShown("none")
+		},
 		async move(
 			id: string,
 			newTime: Temporal.ZonedDateTime,
