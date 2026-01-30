@@ -104,6 +104,11 @@ function currentTaskValue() {
 				parent_id: ROOT_ID,
 				assigned_to: null,
 			});
+			showToast({
+				title: "Fields reset.",
+				variant: "success",
+				duration: 3000,
+			});
 		},
 		createTask() {
 			tasksCollection.insert([
