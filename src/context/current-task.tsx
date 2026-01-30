@@ -107,7 +107,7 @@ function currentTaskValue() {
 			showToast({
 				title: "Fields reset.",
 				variant: "success",
-				duration: 3000,
+				duration: 1500,
 			});
 		},
 		createTask() {
