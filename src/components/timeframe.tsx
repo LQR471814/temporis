@@ -126,7 +126,7 @@ export function Timeframe(props: {
 				</For>
 				<Show when={taskDurations.data !== undefined}>
 					<p class="text-sm whitespace-nowrap">
-						{taskDurations.data?.toFixed(2)}h /{" "}
+						{taskDurations.data?.toFixed(1)}h /{" "}
 						{timeframeDuration().total({ unit: "hours" })}h
 					</p>
 				</Show>
