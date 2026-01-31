@@ -19,7 +19,9 @@
 		"@tailwindcss/container-queries": "^0.1.1",
 		"@tanstack/router-devtools": "^1.120.1",
 		"@tanstack/router-plugin": "^1.120.1",
+		"@types/d3-random": "^3.0.3",
 		"@types/node": "^25.0.10",
+		"@types/tdigest": "^0.1.5",
 		"@typescript/native-preview": "7.0.0-dev.20260127.1",
 		"autoprefixer": "^10.4.23",
 		"drizzle-kit": "^0.31.8",
@@ -51,7 +53,9 @@
 		"@tanstack/solid-router": "^1.120.1",
 		"@tanstack/solid-table": "^8.21.3",
 		"@thisbeyond/solid-dnd": "^0.7.5",
+		"d3-random": "^3.0.1",
 		"solid-js": "^1.9.9",
+		"tdigest": "^0.1.2",
 		"temporal-polyfill": "^0.3.0",
 		"zod": "^4.3.6"
 	}

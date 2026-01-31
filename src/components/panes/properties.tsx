@@ -2,7 +2,7 @@
 
 import { eq, useLiveQuery } from "@tanstack/solid-db";
 import type { AnyFieldApi, FieldApi } from "@tanstack/solid-form";
-import { createMemo, Show, Match, Switch, useContext } from "solid-js";
+import { createMemo, Match, Show, Switch, useContext } from "solid-js";
 import { ROOT_ID } from "src/lib/constants";
 import { tasksCollection } from "src/lib/db";
 import { type Timescale, timescaleFromType } from "src/lib/timescales";

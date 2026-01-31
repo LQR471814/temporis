@@ -14,7 +14,7 @@ function Display(props: {
 		<button
 			type="button"
 			class={cn(
-				"flex items-center gap-2 max-w-[180px]",
+				"flex items-center gap-2 max-w-[300px]",
 				"rounded-md border shadow-sm px-2 hover:bg-primary/5 transition-colors bg-background",
 				"cursor-default touch-none text-sm",
 				props.class,

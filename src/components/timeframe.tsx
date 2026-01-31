@@ -1,12 +1,14 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createDroppable } from "@thisbeyond/solid-dnd";
-import { createMemo, For, useContext } from "solid-js";
+import { Show, createMemo, For, useContext } from "solid-js";
 import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
 import { type Timescale, timescaleTypeOf } from "~/lib/timescales";
 import { asInstant, cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
+import { useQuery, type QueryOptions } from "@tanstack/solid-query";
+import { evalStats } from "src/workers/stats-worker.client";
 
 export function Timeframe(props: {
 	class?: string;
@@ -23,7 +25,8 @@ export function Timeframe(props: {
 		},
 	);
 	const instance = createMemo(() => props.timescale.instance(props.time));
-	const task = useLiveQuery((q) =>
+
+	const tasks = useLiveQuery((q) =>
 		q.from({ task: tasksCollection }).fn.where(({ task }) => {
 			// exclude root task
 			if (task.timescale === "all_time") {
@@ -41,6 +44,25 @@ export function Timeframe(props: {
 		}),
 	);
 	const currentTaskCtx = useContext(CurrentTaskContext);
+
+	const timeframeDuration = createMemo(() =>
+		instance().end.since(instance().start),
+	);
+	const taskDurations = useQuery(() => {
+		const ids = tasks().map((t) => t.id);
+		const params = tasks().map((t) => {
+			const { optimistic, pessimistic, expected } = t;
+			return { optimistic, pessimistic, expected };
+		});
+		return {
+			queryKey: ["percentile", 95, ids, params],
+			queryFn: () =>
+				evalStats(ids, {
+					type: "percentile",
+					percentile: 95,
+				}),
+		} satisfies QueryOptions;
+	});
 
 	return (
 		<button
@@ -89,7 +111,7 @@ export function Timeframe(props: {
 				</Button>
 			</div>
 			<div class="flex flex-col gap-1 px-1 py-1 pb-8">
-				<For each={task()}>
+				<For each={tasks()}>
 					{(task) => (
 						<TaskChip
 							class="z-10"
@@ -102,6 +124,12 @@ export function Timeframe(props: {
 						/>
 					)}
 				</For>
+				<Show when={taskDurations.data !== undefined}>
+					<p class="text-sm whitespace-nowrap">
+						{taskDurations.data?.toFixed(2)}h /{" "}
+						{timeframeDuration().total({ unit: "hours" })}h
+					</p>
+				</Show>
 			</div>
 		</button>
 	);
