@@ -7,6 +7,7 @@ import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { routeTree } from "./routeTree.gen";
 import "solid-devtools";
 import { attachDevtoolsOverlay } from "@solid-devtools/overlay";
+import { QueryClientProvider } from "@tanstack/solid-query";
 import type { Draggable, Droppable } from "@thisbeyond/solid-dnd";
 import { createDraggable, createDroppable } from "@thisbeyond/solid-dnd";
 import { queryClient } from "./lib/query";
@@ -31,7 +32,12 @@ if (import.meta.env.DEV) {
 	window.__TANSTACK_QUERY_CLIENT__ = queryClient;
 }
 
-const router = createRouter({ routeTree });
+const router = createRouter({
+	routeTree,
+	context: {
+		queryClient,
+	},
+});
 
 declare module "@tanstack/solid-router" {
 	interface Register {
@@ -47,4 +53,12 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-if (root) render(() => <RouterProvider router={router} />, root);
+if (root)
+	render(
+		() => (
+			<QueryClientProvider client={queryClient}>
+				<RouterProvider router={router} />
+			</QueryClientProvider>
+		),
+		root,
+	);

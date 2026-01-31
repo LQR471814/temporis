@@ -1,14 +1,20 @@
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createDroppable } from "@thisbeyond/solid-dnd";
-import { Show, createMemo, For, useContext } from "solid-js";
+import {
+	createEffect,
+	createMemo,
+	createSignal,
+	For,
+	Show,
+	useContext,
+} from "solid-js";
+import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
 import { type Timescale, timescaleTypeOf } from "~/lib/timescales";
 import { asInstant, cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
-import { useQuery, type QueryOptions } from "@tanstack/solid-query";
-import { evalStats } from "src/workers/stats-worker.client";
 
 export function Timeframe(props: {
 	class?: string;
@@ -38,7 +44,7 @@ export function Timeframe(props: {
 			const startInstant = asInstant(task.timeframe_start);
 			return (
 				Temporal.Instant.compare(startInstant, instance().start.toInstant()) >=
-				0 &&
+					0 &&
 				Temporal.Instant.compare(startInstant, instance().end.toInstant()) < 0
 			);
 		}),
@@ -48,20 +54,21 @@ export function Timeframe(props: {
 	const timeframeDuration = createMemo(() =>
 		instance().end.since(instance().start),
 	);
-	const taskDurations = useQuery(() => {
+	const [p95dur, setP95Dur] = createSignal<number | null>(null);
+	const [p95err, setP95Err] = createSignal<Error | null>(null);
+	createEffect(() => {
 		const ids = tasks().map((t) => t.id);
-		const params = tasks().map((t) => {
-			const { optimistic, pessimistic, expected } = t;
-			return { optimistic, pessimistic, expected };
-		});
-		return {
-			queryKey: ["percentile", 95, ids, params],
-			queryFn: () =>
-				evalStats(ids, {
-					type: "percentile",
-					percentile: 95,
-				}),
-		} satisfies QueryOptions;
+		evalStats(ids, {
+			type: "percentile",
+			percentile: 95,
+		})
+			.then((dur) => {
+				setP95Dur(dur);
+			})
+			.catch((err) => {
+				console.error(err);
+				setP95Err(err);
+			});
 	});
 
 	return (
@@ -124,11 +131,14 @@ export function Timeframe(props: {
 						/>
 					)}
 				</For>
-				<Show when={taskDurations.data !== undefined}>
+				<Show when={p95dur() !== null} fallback={<p>...</p>}>
 					<p class="text-sm whitespace-nowrap">
-						{taskDurations.data?.toFixed(1)}h /{" "}
+						{p95dur()?.toFixed(1)}h /{" "}
 						{timeframeDuration().total({ unit: "hours" })}h
 					</p>
+				</Show>
+				<Show when={p95err() !== null}>
+					<p class="text-sm text-red-500">Estimate failed</p>
 				</Show>
 			</div>
 		</button>

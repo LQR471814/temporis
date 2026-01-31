@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/solid-query";
 import { createFileRoute } from "@tanstack/solid-router";
 import { HorizontalControlled } from "src/components/panes/horizontal-controlled";
 import { Properties } from "src/components/panes/properties";
@@ -12,6 +13,8 @@ export const Route = createFileRoute("/test/resizable")({
 });
 
 function RouteComponent() {
+	const client = useQueryClient();
+	console.log("Is client defined?", !!client);
 	return (
 		<ViewProvider>
 			<CurrentTaskProvider>
