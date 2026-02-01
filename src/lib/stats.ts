@@ -66,6 +66,6 @@ function simulate(digest: Digest, trials: number, tasks: Task[]) {
 // with the first level, then go down 1 level at a time.
 export function taskTimeDigest(tasks: Task[]) {
 	const digest = new Digest();
-	simulate(digest, 10000, tasks);
+	simulate(digest, 100000, tasks);
 	return digest;
 }
