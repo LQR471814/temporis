@@ -14,7 +14,7 @@ export type Request = {
 self.onmessage = ({ data }) => {
 	const req = data as Request;
 	try {
-		const t1 = performance.now();
+		// const t1 = performance.now();
 		const digest = taskTimeDigest(req.tasks);
 		switch (req.action.type) {
 			case "percentile": {
@@ -27,8 +27,8 @@ self.onmessage = ({ data }) => {
 				break;
 			}
 		}
-		const t2 = performance.now();
-		console.log(`handled request in ${t2 - t1}ms`);
+		// const t2 = performance.now();
+		// console.log(`handled request in ${t2 - t1}ms`);
 	} catch (err) {
 		self.postMessage({ id: data.id, error: err });
 	}
