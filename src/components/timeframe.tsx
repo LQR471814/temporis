@@ -150,7 +150,7 @@ function Display(props: {
 				props.class,
 			)}
 			classList={{ "bg-muted": props.isDroppingOver }}
-			onDblClick={() => { }}
+			onDblClick={props.onCreateAction}
 			ref={props.ref}
 		>
 			<div
