@@ -13,6 +13,22 @@ export type Task = {
 };
 
 function pertGenerator(params: PERTParams) {
+	if (
+		params.optimistic === params.expected &&
+		params.expected === params.pessimistic
+	) {
+		return () => {
+			return params.optimistic;
+		};
+	}
+	if (params.optimistic === params.expected) {
+		// leave 0.1% of clearance between optimistic and expected
+		params.optimistic -= 0.001 * params.optimistic;
+	}
+	if (params.expected === params.pessimistic) {
+		// leave 0.1% of clearance between pessimistic and expected
+		params.optimistic -= 0.001 * params.expected;
+	}
 	const r =
 		(params.expected - params.optimistic) /
 		(params.pessimistic - params.optimistic);

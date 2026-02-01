@@ -26,9 +26,22 @@ export function currentTz() {
 	return Intl.DateTimeFormat().resolvedOptions().timeZone;
 }
 
-export function asInstant(dt: string) {
+export function asInstant(dt: string | Date) {
+	if (dt instanceof Date) {
+		return Temporal.Instant.from(dt.toISOString());
+	}
 	if (dt.endsWith("Z")) {
 		return Temporal.Instant.from(dt);
 	}
 	return Temporal.Instant.from(`${dt}Z`);
+}
+
+export function asUTCDate(dt: string | Date) {
+	if (dt instanceof Date) {
+		return dt;
+	}
+	if (dt.endsWith("Z")) {
+		return new Date(dt);
+	}
+	return new Date(`${dt}Z`);
 }

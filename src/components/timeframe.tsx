@@ -1,4 +1,12 @@
-import { useLiveQuery } from "@tanstack/solid-db";
+import {
+	and,
+	createLiveQueryCollection,
+	eq,
+	gte,
+	lt,
+	not,
+	useLiveQuery,
+} from "@tanstack/solid-db";
 import { createDroppable } from "@thisbeyond/solid-dnd";
 import {
 	createEffect,
@@ -6,17 +14,57 @@ import {
 	createSignal,
 	For,
 	Match,
+	Show,
 	Switch,
 	useContext,
+	type Accessor,
 } from "solid-js";
 import { TaskChipContext } from "src/context/task-chip";
 import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
 import { type Timescale, timescaleTypeOf } from "~/lib/timescales";
-import { asInstant, cn } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
+import { ViewContext } from "src/context/view";
+
+function usePercentileDuration(
+	percentile: Accessor<number>,
+	tasks: Accessor<
+		{
+			id: string;
+			optimistic: number;
+			expected: number;
+			pessimistic: number;
+		}[]
+	>,
+) {
+	const [duration, setDuration] = createSignal<number | null>(null);
+	const [error, setError] = createSignal<Error | null>(null);
+	createEffect(() => {
+		tasks().map((t) => ({
+			o: t.optimistic,
+			e: t.expected,
+			p: t.pessimistic,
+		}));
+		const ids = tasks().map((t) => t.id);
+		setDuration(null);
+		setError(null);
+		evalStats(ids, {
+			type: "percentile",
+			percentile: percentile(),
+		})
+			.then((dur) => {
+				setDuration(dur);
+			})
+			.catch((err) => {
+				console.error(err);
+				setError(err);
+			});
+	});
+	return { duration, error };
+}
 
 export function Timeframe(props: {
 	class?: string;
@@ -25,6 +73,8 @@ export function Timeframe(props: {
 	collapsible?: boolean;
 	accented?: boolean;
 }) {
+	// dnd
+
 	const namespace = useContext(TaskChipContext);
 	const droppable = createDroppable(
 		`${namespace?.namespace ?? "null_namespace"} ${props.timescale.name} ${props.time.toString()}`,
@@ -33,59 +83,74 @@ export function Timeframe(props: {
 			timescale: () => props.timescale,
 		},
 	);
+
+	// timeframe calculations
+
 	const instance = createMemo(() => props.timescale.instance(props.time));
-
-	const tasks = useLiveQuery((q) => {
-		// for some reason, this isn't rerun unless the dependencies are
-		// explicitly stated here
-		instance().start;
-		instance().end;
-		return q.from({ task: tasksCollection }).fn.where(({ task }) => {
-			// exclude root task
-			if (task.timescale === "all_time") {
-				return false;
-			}
-			if (task.timescale !== timescaleTypeOf(props.timescale)) {
-				return false;
-			}
-			const startInstant = asInstant(task.timeframe_start);
-			return (
-				Temporal.Instant.compare(startInstant, instance().start.toInstant()) >=
-				0 &&
-				Temporal.Instant.compare(startInstant, instance().end.toInstant()) < 0
-			);
-		});
-	});
-	const currentTaskCtx = useContext(CurrentTaskContext);
-
+	const timescaleType = createMemo(() => timescaleTypeOf(props.timescale));
 	const timeframeDuration = createMemo(() =>
 		instance().end.since(instance().start),
 	);
-	const [p95dur, setP95Dur] = createSignal<number | null>(null);
-	const [p95err, setP95Err] = createSignal<Error | null>(null);
-	createEffect(() => {
-		// effect has implicit dependency on task parameters, so we explicitly
-		// specify them here
-		tasks().map((t) => ({
-			o: t.optimistic,
-			e: t.expected,
-			p: t.pessimistic,
-		}));
-		const ids = tasks().map((t) => t.id);
-		setP95Dur(null);
-		setP95Err(null);
-		evalStats(ids, {
-			type: "percentile",
-			percentile: 95,
-		})
-			.then((dur) => {
-				setP95Dur(dur);
-			})
-			.catch((err) => {
-				console.error(err);
-				setP95Err(err);
+
+	// task
+
+	const tasksInTimeframe = createLiveQueryCollection((q) => {
+		// for some reason, this isn't rerun unless the dependencies are
+		// explicitly stated here (do not compute these values from within the
+		// query's where callback)
+		const tfstart = new Date(instance().start.epochMilliseconds);
+		const tfend = new Date(instance().end.epochMilliseconds);
+		return q
+			.from({ task: tasksCollection })
+			.where(({ task }) => not(eq(task.timescale, "all_time")))
+			.where(({ task }) =>
+				and(
+					gte(task.timeframe_start, tfstart),
+					lt(task.timeframe_start, tfend),
+				),
+			);
+	});
+	const tasks = useLiveQuery((q) =>
+		q
+			.from({ task: tasksInTimeframe })
+			.where(({ task }) => eq(task.timescale, timescaleType())),
+	);
+	// other tasks include:
+	// - tasks which also occur within the timeframe but not the same timescale
+	// - tasks which are not children of the tasks in `tasks()`
+	const otherTasks = useLiveQuery((q) => {
+		// explicitly list dependency here, otherwise the live query doesn't update
+		tasks();
+		return q
+			.from({ task: tasksInTimeframe })
+			.where(({ task }) => not(eq(task.timescale, timescaleType())))
+			.fn.where(({ task }) => {
+				let id = task.id;
+				let parent = task.parent_id;
+				while (id !== parent) {
+					if (tasks().findIndex((e) => e.id === parent) >= 0) {
+						return false;
+					}
+					const parentTask = tasksCollection.get(parent);
+					if (!parentTask) {
+						throw new Error(`could not find parent task: ${parent}`);
+					}
+					id = parentTask.id;
+					parent = parentTask.parent_id;
+				}
+				return true;
 			});
 	});
+	const currentTaskCtx = useContext(CurrentTaskContext);
+
+	// percentile computation
+
+	const viewCtx = useContext(ViewContext);
+	const percentile = viewCtx?.state.percentile ?? 95;
+
+	const allTasks = createMemo(() => [...tasks(), ...otherTasks()]);
+	// const otherTaskDuration = usePercentileDuration(() => percentile, otherTasks);
+	const totalTaskDuration = usePercentileDuration(() => percentile, allTasks);
 
 	return (
 		<Display
@@ -108,14 +173,16 @@ export function Timeframe(props: {
 				},
 			}))}
 			duration={
-				p95dur() !== null
+				totalTaskDuration.duration() !== null
 					? {
-						// biome-ignore lint/style/noNonNullAssertion: this has already been checked
-						filledHours: p95dur()!,
-						totalHours: timeframeDuration().total({ unit: "hours" }),
-					}
-					: p95err()
+							// biome-ignore lint/style/noNonNullAssertion: this has already been checked
+							filledHours: totalTaskDuration.duration()!,
+							totalHours: timeframeDuration().total({ unit: "hours" }),
+						}
+					: totalTaskDuration.error()
 			}
+			hiddenTasks={otherTasks().length}
+			// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
 	);
 }
@@ -140,6 +207,8 @@ function Display(props: {
 	ref(el: HTMLButtonElement): void;
 	tasks: TaskElementParams[];
 	duration: null | DurationStats | Error;
+	hiddenTasks: number;
+	// hiddenTasksDuration: number | null;
 }) {
 	return (
 		<button
@@ -189,6 +258,14 @@ function Display(props: {
 						/>
 					)}
 				</For>
+				<Show when={props.hiddenTasks > 0}>
+					<div class="border border-dashed text-primary/30 rounded-md">
+						<p class="text-center text-sm">
+							{props.hiddenTasks} lower-level tasks
+							{/* ({props.hiddenTasksDuration?.toFixed(1) ?? "..."}h) */}
+						</p>
+					</div>
+				</Show>
 				<Switch>
 					<Match when={props.duration instanceof Error}>
 						<p class="text-sm text-red-500">

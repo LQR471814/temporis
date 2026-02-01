@@ -17,11 +17,15 @@ function viewValue() {
 	const [state, setState] = createStore({
 		offset: Temporal.Duration.from({ seconds: 0 }),
 		timescale: week,
+		percentile: 95,
 	});
 	const timescaleDuration = createMemo(() => durationOf(state.timescale));
 	return {
 		state,
 		timescaleDuration,
+		setPercentile(percentile: number) {
+			setState((prev) => ({ ...prev, percentile }));
+		},
 		setTimescale(timescale: Timescale) {
 			setState((prev) => ({ ...prev, timescale }));
 		},

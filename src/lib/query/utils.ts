@@ -1,5 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
+import type { StandardSchema } from "@tanstack/solid-db";
 import type {
 	DefaultError,
 	MutationOptions,
@@ -10,33 +11,48 @@ import { type Database, supabase } from "../supabase";
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
 export function tableQueries<
-	Schema extends keyof DatabaseWithoutInternals,
-	TableName extends keyof DatabaseWithoutInternals[Schema]["Tables"],
+	DBSchema extends keyof DatabaseWithoutInternals,
+	TableName extends keyof DatabaseWithoutInternals[DBSchema]["Tables"],
+	Schema extends StandardSchema<unknown>,
 	__SelectRow extends
-		DatabaseWithoutInternals[Schema]["Tables"][TableName] extends {
-			Row: infer I;
-		}
-			? I
-			: never,
+	DatabaseWithoutInternals[DBSchema]["Tables"][TableName] extends {
+		Row: infer I;
+	}
+	? I
+	: never,
 	__InsertRow extends
-		DatabaseWithoutInternals[Schema]["Tables"][TableName] extends {
-			Insert: infer I;
-		}
-			? I
-			: never,
+	DatabaseWithoutInternals[DBSchema]["Tables"][TableName] extends {
+		Insert: infer I;
+	}
+	? I
+	: never,
 	__UpdateRow extends
-		DatabaseWithoutInternals[Schema]["Tables"][TableName] extends {
-			Update: infer I;
-		}
-			? I
-			: never,
->(schema: Schema, table: TableName) {
+	DatabaseWithoutInternals[DBSchema]["Tables"][TableName] extends {
+		Update: infer I;
+	}
+	? I
+	: never,
+>(schema: DBSchema, table: TableName, validator: Schema) {
+	// must validate server data manually since tanstack db doesn't do it
+	// automatically
+	// https://tanstack.com/db/latest/docs/guides/schemas#core-concepts-tinput-vs-toutput
 	const selectQuery = {
 		queryKey: ["supabase", table, "select"],
 		queryFn: async (): Promise<__SelectRow[]> => {
 			const { data, error } = await supabase.from(table as any).select();
 			if (error) throw error;
-			return data as any;
+			const result = (
+				await Promise.all(data.map((v) => validator["~standard"].validate(v)))
+			).map((res) => {
+				if (res.issues) {
+					throw new Error(
+						`Validation errors:
+${res.issues.map((i) => i.message).join(", ")}`,
+					);
+				}
+				return res.value;
+			});
+			return result as any;
 		},
 	} satisfies QueryOptions;
 
