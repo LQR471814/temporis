@@ -44,7 +44,7 @@ export function Timeframe(props: {
 			const startInstant = asInstant(task.timeframe_start);
 			return (
 				Temporal.Instant.compare(startInstant, instance().start.toInstant()) >=
-					0 &&
+				0 &&
 				Temporal.Instant.compare(startInstant, instance().end.toInstant()) < 0
 			);
 		}),
@@ -57,6 +57,11 @@ export function Timeframe(props: {
 	const [p95dur, setP95Dur] = createSignal<number | null>(null);
 	const [p95err, setP95Err] = createSignal<Error | null>(null);
 	createEffect(() => {
+		tasks().map((t) => ({
+			o: t.optimistic,
+			e: t.expected,
+			p: t.pessimistic,
+		}));
 		const ids = tasks().map((t) => t.id);
 		evalStats(ids, {
 			type: "percentile",
