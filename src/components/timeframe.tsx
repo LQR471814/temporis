@@ -199,6 +199,9 @@ function Display(props: {
 							{(props.duration as DurationStats).totalHours}h
 						</p>
 					</Match>
+					<Match when={props.duration === null}>
+						<p>...</p>
+					</Match>
 				</Switch>
 			</div>
 		</button>
