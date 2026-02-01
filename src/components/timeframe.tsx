@@ -5,7 +5,8 @@ import {
 	createMemo,
 	createSignal,
 	For,
-	Show,
+	Match,
+	Switch,
 	useContext,
 } from "solid-js";
 import { evalStats } from "src/workers/stats-worker.client";
@@ -79,6 +80,59 @@ export function Timeframe(props: {
 	});
 
 	return (
+		<Display
+			class={props.class}
+			label={instance().name}
+			accented={props.accented}
+			ref={droppable}
+			isDroppingOver={droppable.isActiveDroppable}
+			onCreateAction={() => {
+				if (!currentTaskCtx) {
+					return;
+				}
+				currentTaskCtx.newChildAt(instance());
+			}}
+			tasks={tasks().map((t) => ({
+				id: t.id,
+				name: t.name,
+				onClick: () => {
+					currentTaskCtx?.selectTask(t.id);
+				},
+			}))}
+			duration={
+				p95dur() !== null
+					? {
+						filledHours: p95dur()!,
+						totalHours: timeframeDuration().total({ unit: "hours" }),
+					}
+					: p95err()
+			}
+		/>
+	);
+}
+
+type TaskElementParams = {
+	id: string;
+	name: string;
+	onClick(): void;
+};
+
+type DurationStats = {
+	filledHours: number;
+	totalHours: number;
+};
+
+function Display(props: {
+	class?: string;
+	label: string;
+	accented?: boolean;
+	isDroppingOver: boolean;
+	onCreateAction(): void;
+	ref(el: HTMLButtonElement): void;
+	tasks: TaskElementParams[];
+	duration: null | DurationStats | Error;
+}) {
+	return (
 		<button
 			type="button"
 			class={cn(
@@ -87,14 +141,9 @@ export function Timeframe(props: {
 				"transition-colors hover:border-primary/30 cursor-default",
 				props.class,
 			)}
-			classList={{ "bg-muted": droppable.isActiveDroppable }}
-			onDblClick={() => {
-				if (!currentTaskCtx) {
-					return;
-				}
-				currentTaskCtx.newChildAt(instance());
-			}}
-			use:droppable
+			classList={{ "bg-muted": props.isDroppingOver }}
+			onDblClick={() => { }}
+			ref={props.ref}
 		>
 			<div
 				classList={{
@@ -109,44 +158,41 @@ export function Timeframe(props: {
 						"font-bold": props.accented,
 					}}
 				>
-					{instance().name}
+					{props.label}
 				</p>
 				<Button
 					class="px-1 py-0 h-min aspect-square text-primary/30"
 					variant="ghost"
-					onClick={() => {
-						if (!currentTaskCtx) {
-							return;
-						}
-						currentTaskCtx.newChildAt(instance());
-					}}
+					onClick={props.onCreateAction}
 				>
 					＋
 				</Button>
 			</div>
 			<div class="flex flex-col gap-1 px-1 py-1 pb-8">
-				<For each={tasks()}>
+				<For each={props.tasks}>
 					{(task) => (
 						<TaskChip
 							class="z-10"
 							id={task.id}
 							name={task.name}
 							color="bg-gray-500"
-							onClick={() => {
-								currentTaskCtx?.selectTask(task.id);
-							}}
+							onClick={task.onClick}
 						/>
 					)}
 				</For>
-				<Show when={p95dur() !== null} fallback={<p>...</p>}>
-					<p class="text-sm whitespace-nowrap">
-						{p95dur()?.toFixed(1)}h /{" "}
-						{timeframeDuration().total({ unit: "hours" })}h
-					</p>
-				</Show>
-				<Show when={p95err() !== null}>
-					<p class="text-sm text-red-500">Estimate failed</p>
-				</Show>
+				<Switch>
+					<Match when={props.duration instanceof Error}>
+						<p class="text-sm text-red-500">
+							Estimate failed: {(props.duration as Error).message}
+						</p>
+					</Match>
+					<Match when={props.duration !== null}>
+						<p class="text-sm whitespace-nowrap">
+							{(props.duration as DurationStats).filledHours?.toFixed(1)}h /{" "}
+							{(props.duration as DurationStats).totalHours}h
+						</p>
+					</Match>
+				</Switch>
 			</div>
 		</button>
 	);
