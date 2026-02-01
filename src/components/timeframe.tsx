@@ -9,6 +9,7 @@ import {
 	Switch,
 	useContext,
 } from "solid-js";
+import { TaskChipContext } from "src/context/task-chip";
 import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext } from "~/context/current-task";
 import { tasksCollection } from "~/lib/db";
@@ -16,7 +17,6 @@ import { type Timescale, timescaleTypeOf } from "~/lib/timescales";
 import { asInstant, cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
-import { TaskChipContext } from "src/context/task-chip";
 
 export function Timeframe(props: {
 	class?: string;
@@ -50,7 +50,7 @@ export function Timeframe(props: {
 			const startInstant = asInstant(task.timeframe_start);
 			return (
 				Temporal.Instant.compare(startInstant, instance().start.toInstant()) >=
-				0 &&
+					0 &&
 				Temporal.Instant.compare(startInstant, instance().end.toInstant()) < 0
 			);
 		});
@@ -109,9 +109,10 @@ export function Timeframe(props: {
 			duration={
 				p95dur() !== null
 					? {
-						filledHours: p95dur()!,
-						totalHours: timeframeDuration().total({ unit: "hours" }),
-					}
+							// biome-ignore lint/style/noNonNullAssertion: this has already been checked
+							filledHours: p95dur()!,
+							totalHours: timeframeDuration().total({ unit: "hours" }),
+						}
 					: p95err()
 			}
 		/>
@@ -149,7 +150,7 @@ function Display(props: {
 				props.class,
 			)}
 			classList={{ "bg-muted": props.isDroppingOver }}
-			onDblClick={() => { }}
+			onDblClick={() => {}}
 			ref={props.ref}
 		>
 			<div
