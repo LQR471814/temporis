@@ -180,13 +180,10 @@ export function Timeframe(props: {
 	const [taskAnalysis, setTaskAnalysis] = createSignal(
 		getTaskAnalysis(timescaleType(), getTimeframeTasks()),
 	);
-	const { unsubscribe: unsubAllTasks } = tasksInTimeframe.subscribeChanges(
-		() => {
-			const analysis = getTaskAnalysis(timescaleType(), getTimeframeTasks());
-			setTaskAnalysis(analysis);
-		},
-	);
-	onCleanup(unsubAllTasks);
+	tasksInTimeframe.subscribeChanges(() => {
+		const analysis = getTaskAnalysis(timescaleType(), getTimeframeTasks());
+		setTaskAnalysis(analysis);
+	});
 
 	// not extremely efficient, but beats the correctness issues with
 	// useLiveQuery for now
@@ -197,11 +194,9 @@ export function Timeframe(props: {
 	);
 	const getShownTasks = () => Array.from(shownTasksCollection.values());
 	const [tasks, setTasks] = createSignal(getShownTasks());
-	const { unsubscribe: unsubShownTasks } =
-		shownTasksCollection.subscribeChanges(() => {
-			setTasks(getShownTasks());
-		});
-	onCleanup(unsubShownTasks);
+	shownTasksCollection.subscribeChanges(() => {
+		setTasks(getShownTasks());
+	});
 
 	// percentile computation
 
