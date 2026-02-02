@@ -31,6 +31,8 @@ import { cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
 
+// TODO: make it so that task estimates rerender when their children change!
+
 const cachedPercentiles = new Map<string, number | Promise<number>>();
 
 function usePercentileDuration(

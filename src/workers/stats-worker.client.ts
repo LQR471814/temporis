@@ -1,6 +1,8 @@
 import { tasksCollection } from "src/lib/db";
 import type { Task } from "src/lib/stats";
 import type { Action, Request } from "./stats-worker";
+import { type Accessor, createMemo, createRoot } from "solid-js";
+import { useLiveQuery, eq } from "@tanstack/solid-db";
 
 const worker = new Worker(new URL("./stats-worker.ts", import.meta.url), {
 	type: "module",
@@ -113,3 +115,46 @@ function getTaskBFS(result: Task[], ids: string[]) {
 		result.push(resultTask);
 	}
 }
+
+// function useTaskBFS(taskId: Accessor<string>, offset: number = 0) {
+// 	return createRoot((dispose) => {
+// 		const identity = useLiveQuery((q) =>
+// 			q
+// 				.from({ task: tasksCollection })
+// 				.where(({ task }) => eq(task.id, taskId())),
+// 		);
+// 		const bfs = createMemo(() => {
+// 			if (identity().length === 0) {
+// 				dispose();
+// 				return [];
+// 			}
+// 			const result: Task[] = [
+// 				{
+// 					pert: {
+// 						pessimistic: identity()[0].pessimistic,
+// 						expected: identity()[0].expected,
+// 						optimistic: identity()[0].optimistic,
+// 					},
+// 					children: [],
+// 				},
+// 			];
+// 			const children = useLiveQuery((q) =>
+// 				q
+// 					.from({ task: tasksCollection })
+// 					.where(({ task }) => eq(task.parent_id, taskId())),
+// 			);
+// 			const childrenDeps = createMemo(() =>
+// 				children().flatMap((c) => {
+// 					const childTasks = useTaskBFS(() => c.id, offset + 1);
+// 					// direct child
+// 					result.push(childTasks[0]);
+// 					result[0].children.push(result.length - 1);
+// 					return childTasks.slice(1);
+// 				}),
+// 			);
+// 			result.push(...childrenDeps());
+// 			return result;
+// 		});
+// 		return bfs();
+// 	});
+// }
