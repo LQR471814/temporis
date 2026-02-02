@@ -9,6 +9,7 @@ export type TaskNode = {
 	children: TaskNode[];
 };
 
+// currently unused
 class TaskTreeMapping {
 	mapping: Map<string, Accessor<TaskNode>>;
 
@@ -58,52 +59,3 @@ class TaskTreeMapping {
 }
 
 export const taskTree = new TaskTreeMapping();
-
-// retain a mapping of task id -> signal
-// mapping should manage the disposal of non-existent tasks and addition of new tasks
-
-// function createTaskTree(
-// 	taskId: string,
-// 	record: Set<string>,
-// ): Accessor<TaskNode | null> {
-// 	return createRoot((dispose) => {
-// 		record.add(taskId);
-// 		const identity = useLiveQuery((q) =>
-// 			q
-// 				.from({ task: tasksCollection })
-// 				.where(({ task }) => eq(task.id, taskId)),
-// 		);
-// 		const childrenRows = useLiveQuery((q) =>
-// 			q
-// 				.from({ task: tasksCollection })
-// 				.where(({ task }) => eq(task.parent_id, taskId))
-// 				.select(({ task }) => ({ id: task.id })),
-// 		);
-// 		return createMemo(() => {
-// 			const parent = identity()[0];
-// 			// we don't check identity because for some reason it doesn't load properly
-// 			if (!tasksCollection.get(taskId)) {
-// 				dispose();
-// 				// this return value will never be used
-// 				return null;
-// 			}
-// 			const children: TaskNode[] = [];
-// 			for (const { id } of childrenRows()) {
-// 				const child = createTaskTree(id, set)();
-// 				if (child === null) {
-// 					return {
-// 						...parent,
-// 						children: [],
-// 					};
-// 				}
-// 				children.push(child);
-// 			}
-// 			console.log("parent", parent, children);
-// 			const res = {
-// 				...parent,
-// 				children,
-// 			};
-// 			return res;
-// 		});
-// 	});
-// }

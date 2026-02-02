@@ -45,6 +45,14 @@ function usePercentileDuration(
 			pessimistic: number;
 		}[]
 	>,
+	dependencies: Accessor<
+		{
+			id: string;
+			optimistic: number;
+			expected: number;
+			pessimistic: number;
+		}[]
+	>,
 ) {
 	const [state, setState] = createSignal<
 		{ duration: number; error: null } | { duration: null; error: Error } | null
@@ -54,6 +62,9 @@ function usePercentileDuration(
 		let hash = "";
 		for (const t of tasks()) {
 			hash += `${t.optimistic}:${t.expected}:${t.pessimistic},`;
+		}
+		for (const t of dependencies()) {
+			hash += `|${t.optimistic}:${t.expected}:${t.pessimistic},`;
 		}
 		const cached = cachedPercentiles.get(hash);
 		if (typeof cached === "number") {
@@ -100,15 +111,18 @@ function getTaskAnalysis(
 	}
 	let hidden = 0;
 	const indep: Tables<"task">[] = [];
+	const dependent: Tables<"task">[] = [];
 	for (const t of allTasks) {
 		if (!ids.has(t.parent_id)) {
 			if (t.timescale !== currentTimescale) {
 				hidden++;
 			}
 			indep.push(t);
+			continue;
 		}
+		dependent.push(t);
 	}
-	return { indep, hidden };
+	return { indep, dependent, hidden };
 }
 
 export function Timeframe(props: {
@@ -162,6 +176,17 @@ export function Timeframe(props: {
 					currentTimescaleHierarchyIdx,
 			);
 	});
+	const getTimeframeTasks = () => Array.from(tasksInTimeframe.values());
+	const [taskAnalysis, setTaskAnalysis] = createSignal(
+		getTaskAnalysis(timescaleType(), getTimeframeTasks()),
+	);
+	const { unsubscribe: unsubAllTasks } = tasksInTimeframe.subscribeChanges(
+		() => {
+			const analysis = getTaskAnalysis(timescaleType(), getTimeframeTasks());
+			setTaskAnalysis(analysis);
+		},
+	);
+	onCleanup(unsubAllTasks);
 
 	// not extremely efficient, but beats the correctness issues with
 	// useLiveQuery for now
@@ -170,18 +195,11 @@ export function Timeframe(props: {
 			.from({ task: tasksInTimeframe })
 			.where(({ task }) => eq(task.timescale, timescaleType())),
 	);
-
 	const getShownTasks = () => Array.from(shownTasksCollection.values());
-	const getTimeframeTasks = () => Array.from(tasksInTimeframe.values());
 	const [tasks, setTasks] = createSignal(getShownTasks());
-	const [taskAnalysis, setTaskAnalysis] = createSignal(
-		getTaskAnalysis(timescaleType(), getTimeframeTasks()),
-	);
 	const { unsubscribe: unsubShownTasks } =
 		shownTasksCollection.subscribeChanges(() => {
-			const foundTasks = getShownTasks();
-			setTasks(foundTasks);
-			setTaskAnalysis(getTaskAnalysis(timescaleType(), getTimeframeTasks()));
+			setTasks(getShownTasks());
 		});
 	onCleanup(unsubShownTasks);
 
@@ -194,6 +212,7 @@ export function Timeframe(props: {
 	const totalTaskDuration = usePercentileDuration(
 		() => percentile,
 		() => taskAnalysis().indep,
+		() => taskAnalysis().dependent,
 	);
 	const duration = createMemo(() => {
 		const dur = totalTaskDuration();
