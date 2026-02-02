@@ -3,7 +3,7 @@
 - Correctness:
     - [x] Bug: Make "other tasks" of a timeframe not include
       children of child tasks.
-    - [-] Bug: Make estimates of parent task update when child
+    - [x] Bug: Make estimates of parent task update when child
       tasks update their durations.
 - Features:
     - [ ] Feature: Add UI to view the children tasks and total
