@@ -298,12 +298,10 @@ function FormFields(props: {
 					const parentOptions = useLiveQuery((q) =>
 						q.from({ tasks: tasksCollection }),
 					);
-					const parentQuery = useLiveQuery((q) =>
-						q
-							.from({ tasks: tasksCollection })
-							.where(({ tasks }) => eq(tasks.id, field().state.value)),
+					const parent = createMemo(
+						// biome-ignore lint/style/noNonNullAssertion: this is guaranteed to exist
+						() => tasksCollection.get(field().state.value)!,
 					);
-					const parent = createMemo(() => parentQuery()[0]);
 					return (
 						<div class="max-w-[220px]">
 							<label class="text-sm font-medium" for={field().name}>
