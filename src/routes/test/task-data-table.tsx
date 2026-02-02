@@ -9,7 +9,7 @@ import { createFileRoute } from "@tanstack/solid-router";
 import type { ColumnDef } from "@tanstack/solid-table";
 import { createEffect, Show } from "solid-js";
 import { DataTable } from "~/components/ui/data-table";
-import { executorsCollection, tasksCollection } from "~/lib/db/tables";
+import { executorsCollection, tasksCollection } from "~/lib/collections/tables";
 
 const joinedTasks = createCollection(
 	liveQueryCollectionOptions({

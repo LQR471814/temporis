@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { useLiveQuery } from "@tanstack/solid-db";
 import { createEffect } from "solid-js";
-import { tasksCollection } from "~/lib/db";
+import { tasksCollection } from "~/lib/collections";
 
 export const Route = createFileRoute("/")({
 	component: Home,

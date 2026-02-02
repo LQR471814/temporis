@@ -22,7 +22,7 @@ import {
 import { ViewContext } from "src/context/view";
 import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext, type DroppableData } from "~/context/current-task";
-import { tasksCollection } from "~/lib/db";
+import { tasksCollection } from "~/lib/collections";
 import {
 	type Timescale,
 	timescaleTypeOf,
