@@ -265,7 +265,7 @@ function Display(props: {
 		>
 			<div
 				classList={{
-					"flex justify-between items-center sticky top-0": true,
+					"flex justify-between items-center sticky top-0 z-20": true,
 					"rounded-t-lg bg-background border-b border-muted px-2 py-1": true,
 					"transition-colors group-hover:border-primary/30": true,
 				}}
