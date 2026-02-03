@@ -1,4 +1,4 @@
-import { tasksCollection } from "src/lib/db";
+import { tasksCollection } from "src/lib/collections";
 import type { Task } from "src/lib/stats";
 import type { Action, Request } from "./stats-worker";
 

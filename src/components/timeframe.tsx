@@ -1,11 +1,4 @@
-import {
-	and,
-	createLiveQueryCollection,
-	eq,
-	gte,
-	lt,
-	not,
-} from "@tanstack/solid-db";
+import { and, eq, gte, lt, not, useLiveQuery } from "@tanstack/solid-db";
 import { createDroppable } from "@thisbeyond/solid-dnd";
 import {
 	type Accessor,
@@ -17,21 +10,20 @@ import {
 	Show,
 	Switch,
 	useContext,
-	onCleanup,
 } from "solid-js";
 import { ViewContext } from "src/context/view";
+import type { Enums, Tables } from "src/lib/supabase/types.gen";
 import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext, type DroppableData } from "~/context/current-task";
 import { tasksCollection } from "~/lib/collections";
 import {
+	hierarchyTypes,
 	type Timescale,
 	timescaleTypeOf,
-	hierarchyTypes,
 } from "~/lib/timescales";
 import { cn } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
-import type { Enums, Tables } from "src/lib/supabase/types.gen";
 
 const cachedPercentiles = new Map<string, number | Promise<number>>();
 
@@ -152,10 +144,10 @@ export function Timeframe(props: {
 
 	// task
 
-	const tasksInTimeframe = createLiveQueryCollection((q) => {
+	const tasksInTimeframe = useLiveQuery((q) => {
 		// for some reason, this isn't rerun unless the dependencies are
-		// explicitly stated here (do not compute these values from within the
-		// query's where callback)
+		// explicitly stated here (do not compute these values from within
+		// the query's where callback)
 		const tfstart = instance().start.epochMilliseconds;
 		const tfend = instance().end.epochMilliseconds;
 		const currentTimescaleHierarchyIdx = hierarchyTypes.indexOf(
@@ -176,34 +168,17 @@ export function Timeframe(props: {
 					currentTimescaleHierarchyIdx,
 			);
 	});
-	const getTimeframeTasks = () => Array.from(tasksInTimeframe.values());
-	const [taskAnalysis, setTaskAnalysis] = createSignal(
-		getTaskAnalysis(timescaleType(), getTimeframeTasks()),
+	const taskAnalysis = createMemo(() =>
+		getTaskAnalysis(timescaleType(), tasksInTimeframe()),
 	);
-	tasksInTimeframe.subscribeChanges(() => {
-		const analysis = getTaskAnalysis(timescaleType(), getTimeframeTasks());
-		setTaskAnalysis(analysis);
-	});
-
-	// not extremely efficient, but beats the correctness issues with
-	// useLiveQuery for now
-	const shownTasksCollection = createLiveQueryCollection((q) =>
-		q
-			.from({ task: tasksInTimeframe })
-			.where(({ task }) => eq(task.timescale, timescaleType())),
+	const shownTasks = createMemo(() =>
+		tasksInTimeframe().filter((t) => t.timescale === timescaleType()),
 	);
-	const getShownTasks = () => Array.from(shownTasksCollection.values());
-	const [tasks, setTasks] = createSignal(getShownTasks());
-	shownTasksCollection.subscribeChanges(() => {
-		setTasks(getShownTasks());
-	});
 
 	// percentile computation
 
 	const viewCtx = useContext(ViewContext);
 	const percentile = viewCtx?.state.percentile ?? 95;
-
-	// const otherTaskDuration = usePercentileDuration(() => percentile, otherTasks);
 	const totalTaskDuration = usePercentileDuration(
 		() => percentile,
 		() => taskAnalysis().indep,
@@ -238,7 +213,7 @@ export function Timeframe(props: {
 				}
 				currentTaskCtx.newChildAt(instance());
 			}}
-			tasks={tasks().map((t) => ({
+			tasks={shownTasks().map((t) => ({
 				id: t.id,
 				name: t.name,
 				onClick: () => {

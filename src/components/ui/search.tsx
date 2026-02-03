@@ -48,9 +48,6 @@ export function Search<
 			optionLabel={props.labelField as any}
 			onInputChange={onInputChange}
 			onChange={props.onChange}
-			onClick={() => {
-				onInputChange("");
-			}}
 			itemComponent={(p) => (
 				<ComboboxItem item={p.item}>
 					{p.item.rawValue[props.labelField as any] as any}

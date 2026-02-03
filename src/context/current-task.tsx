@@ -12,7 +12,7 @@ import {
 	type ParentComponent,
 } from "solid-js";
 import { showToast } from "src/components/ui/toast";
-import { tasksCollection } from "src/lib/db";
+import { tasksCollection } from "src/lib/collections";
 import type { Enums } from "src/lib/supabase/types.gen";
 import { ROOT_ID } from "~/lib/constants";
 import {
@@ -72,6 +72,8 @@ function currentTaskValue() {
 			duration: 3000,
 		});
 	});
+
+	let lastMove: Promise<void> | null = null;
 
 	return {
 		shown,
@@ -142,10 +144,20 @@ function currentTaskValue() {
 			newTimeframeStart: Temporal.ZonedDateTime,
 			newTimescale: Enums<"timescale_type">,
 		) {
-			tasksCollection.update(id, (val) => {
-				val.timeframe_start = newTimeframeStart.epochMilliseconds;
-				val.timescale = newTimescale;
-			});
+			const val = tasksCollection.get(id);
+			if (!val) throw new Error(`unknown task: ${id}`);
+			// not using update because that causes state issues!
+			lastMove = (async () => {
+				await lastMove;
+				const result = tasksCollection.delete(val.id);
+				await result.isPersisted.promise;
+				const result2 = tasksCollection.insert({
+					...val,
+					timeframe_start: newTimeframeStart.epochMilliseconds,
+					timescale: newTimescale,
+				});
+				await result2.isPersisted.promise;
+			})();
 		},
 	};
 }

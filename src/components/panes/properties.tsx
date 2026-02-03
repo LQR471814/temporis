@@ -1,10 +1,10 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
-import { eq, useLiveQuery } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import type { AnyFieldApi, FieldApi } from "@tanstack/solid-form";
 import { createMemo, Match, Show, Switch, useContext } from "solid-js";
 import { ROOT_ID } from "src/lib/constants";
-import { tasksCollection } from "src/lib/db";
+import { tasksCollection } from "src/lib/collections";
 import { type Timescale, timescaleFromType } from "src/lib/timescales";
 import { asInstant, cn, currentTz } from "src/lib/utils";
 import {
