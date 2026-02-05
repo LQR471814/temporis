@@ -205,6 +205,7 @@ function FormMultilineText(props: {
 				placeholder={props.placeholder}
 				onBlur={props.field.handleBlur}
 				onInput={(e) => props.field.handleChange(e.currentTarget.value)}
+				value={props.field.state.value}
 				class={props.class}
 			/>
 			<FieldInfo field={props.field} />
