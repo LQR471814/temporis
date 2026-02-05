@@ -22,8 +22,9 @@ export function Horizontal(props: {
 						timescale={props.child}
 						time={start}
 						accented={
-							Temporal.ZonedDateTime.compare(start, currentInstance().start) ===
-							0
+							Temporal.ZonedDateTime.compare(start, currentInstance().start) >=
+								0 &&
+							Temporal.ZonedDateTime.compare(start, currentInstance().end) < 0
 						}
 					/>
 				)}
