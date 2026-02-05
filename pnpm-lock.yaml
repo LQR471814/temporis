@@ -32,12 +32,9 @@ importers:
       '@tanstack/pacer':
         specifier: ^0.18.0
         version: 0.18.0
-      '@tanstack/query-db-collection':
-        specifier: ^1.0.20
-        version: 1.0.20(@tanstack/query-core@5.90.20)(typescript@5.9.3)
       '@tanstack/solid-db':
-        specifier: ^0.2.3
-        version: 0.2.3(solid-js@1.9.10)(typescript@5.9.3)
+        specifier: 0.2.5
+        version: 0.2.5(solid-js@1.9.10)(typescript@5.9.3)
       '@tanstack/solid-form':
         specifier: ^1.28.0
         version: 1.28.0(solid-js@1.9.10)
@@ -51,7 +48,7 @@ importers:
         specifier: ^8.21.3
         version: 8.21.3(solid-js@1.9.10)
       '@tanstack/trailbase-db-collection':
-        specifier: ^0.1.69
+        specifier: 0.1.69
         version: 0.1.69(typescript@5.9.3)
       '@thisbeyond/solid-dnd':
         specifier: ^0.7.5
@@ -1146,11 +1143,6 @@ packages:
     peerDependencies:
       typescript: '>=4.7'
 
-  '@tanstack/db@0.5.23':
-    resolution: {integrity: sha512-/zO2K2hjkupL0DYHyPLnzEf3gFBlznUyZ+RLWBSFX4Dsf6jhjoGnAVZe6W25fZYyoZ5adb/PlhedHDqKO1u2rg==}
-    peerDependencies:
-      typescript: '>=4.7'
-
   '@tanstack/db@0.5.25':
     resolution: {integrity: sha512-VqVchs6Mm4rw2GyiOkaoD+PJw6lCJT8EI/TzPu8KWZy3QxyOlilpMvEuDTCl0LZdp1iLYlQT1NdgDg0gimV3kQ==}
     peerDependencies:
@@ -1181,12 +1173,6 @@ packages:
 
   '@tanstack/query-core@5.90.20':
     resolution: {integrity: sha512-OMD2HLpNouXEfZJWcKeVKUgQ5n+n3A2JFmBaScpNDUqSrQSjiveC7dKMe53uJUg1nDG16ttFPz2xfilz6i2uVg==}
-
-  '@tanstack/query-db-collection@1.0.20':
-    resolution: {integrity: sha512-QA2Z8DPFPw+yklsevuXePGz46QmAKN1Mkz6lvdYtBwXHPMYM/DYLQH4wgy0Aigbp06Js7SIfHa7xcvWxGP4aUw==}
-    peerDependencies:
-      '@tanstack/query-core': ^5.0.0
-      typescript: '>=4.7'
 
   '@tanstack/react-router-devtools@1.154.10':
     resolution: {integrity: sha512-+vf7qliy3w+gecbL+l83nAPa2iCRBN1AFpFyPGtv2PaL5fz1h+Z6dQKpaVBQZTz4//vdLlBnD0nu6ozn+HdKGQ==}
@@ -1268,8 +1254,8 @@ packages:
     resolution: {integrity: sha512-61bGx32tMKuEpVRseu2sh1KQe8CfB7793Mch/kyQt0EP3tD7X0sXmimCl3truRiDGUtI0CaSoQV1NPjAII1RBA==}
     engines: {node: '>=12'}
 
-  '@tanstack/solid-db@0.2.3':
-    resolution: {integrity: sha512-m0Y2qeKQOBYliXcxN3/oo2YC+cf87EPDA/he6O1oRWQh2Jtey05WZ9A1wuTCKRGk+KtE/fWhZN60kjg86cR25Q==}
+  '@tanstack/solid-db@0.2.5':
+    resolution: {integrity: sha512-tunB6Nbd2UHnPGXwprc0S4OjsP1JvwG0blmLnKgoG3bKdGyJQ8yVknHc7WWwIUdeAz4tH4x/p2RDVloqEKrnCA==}
     peerDependencies:
       solid-js: '>=1.9.0'
 
@@ -2233,6 +2219,10 @@ packages:
 
   isbot@5.1.33:
     resolution: {integrity: sha512-P4Hgb5NqswjkI0J1CM6XKXon/sxKY1SuowE7Qx2hrBhIwICFyXy54mfgB5eMHXsbe/eStzzpbIGNOvGmz+dlKg==}
+    engines: {node: '>=18'}
+
+  isbot@5.1.34:
+    resolution: {integrity: sha512-aCMIBSKd/XPRYdiCQTLC8QHH4YT8B3JUADu+7COgYIZPvkeoMcUHMRjZLM9/7V8fCj+l7FSREc1lOPNjzogo/A==}
     engines: {node: '>=18'}
 
   jake@10.9.4:
@@ -3990,13 +3980,6 @@ snapshots:
       sorted-btree: 1.8.1
       typescript: 5.9.3
 
-  '@tanstack/db@0.5.23(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db-ivm': 0.1.17(typescript@5.9.3)
-      '@tanstack/pacer-lite': 0.2.1
-      typescript: 5.9.3
-
   '@tanstack/db@0.5.25(typescript@5.9.3)':
     dependencies:
       '@standard-schema/spec': 1.1.0
@@ -4025,13 +4008,6 @@ snapshots:
 
   '@tanstack/query-core@5.90.20': {}
 
-  '@tanstack/query-db-collection@1.0.20(@tanstack/query-core@5.90.20)(typescript@5.9.3)':
-    dependencies:
-      '@standard-schema/spec': 1.1.0
-      '@tanstack/db': 0.5.23(typescript@5.9.3)
-      '@tanstack/query-core': 5.90.20
-      typescript: 5.9.3
-
   '@tanstack/react-router-devtools@1.154.10(@tanstack/react-router@1.154.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(@tanstack/router-core@1.154.8)(csstype@3.2.3)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
       '@tanstack/react-router': 1.154.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -4048,7 +4024,7 @@ snapshots:
       '@tanstack/history': 1.154.7
       '@tanstack/react-store': 0.8.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@tanstack/router-core': 1.154.8
-      isbot: 5.1.33
+      isbot: 5.1.34
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
       tiny-invariant: 1.3.3
@@ -4141,10 +4117,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@tanstack/solid-db@0.2.3(solid-js@1.9.10)(typescript@5.9.3)':
+  '@tanstack/solid-db@0.2.5(solid-js@1.9.10)(typescript@5.9.3)':
     dependencies:
       '@solid-primitives/map': 0.7.2(solid-js@1.9.10)
-      '@tanstack/db': 0.5.23(typescript@5.9.3)
+      '@tanstack/db': 0.5.25(typescript@5.9.3)
       solid-js: 1.9.10
     transitivePeerDependencies:
       - typescript
@@ -5351,6 +5327,8 @@ snapshots:
       is-docker: 2.2.1
 
   isbot@5.1.33: {}
+
+  isbot@5.1.34: {}
 
   jake@10.9.4:
     dependencies:
