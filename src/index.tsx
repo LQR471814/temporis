@@ -7,36 +7,16 @@ import { createRouter, RouterProvider } from "@tanstack/solid-router";
 import { routeTree } from "./routeTree.gen";
 import "solid-devtools";
 import { attachDevtoolsOverlay } from "@solid-devtools/overlay";
-import { QueryClientProvider } from "@tanstack/solid-query";
-import type { Draggable, Droppable } from "@thisbeyond/solid-dnd";
 import { createDraggable, createDroppable } from "@thisbeyond/solid-dnd";
-import { queryClient } from "./lib/query";
 
 // prevent tree shaking of directives
 false && createDroppable;
 false && createDraggable;
 
-declare module "solid-js" {
-	namespace JSX {
-		interface DirectiveFunctions {
-			draggable: Draggable;
-			droppable: Droppable;
-		}
-	}
-}
-
 attachDevtoolsOverlay();
-
-if (import.meta.env.DEV) {
-	// @ts-expect-error: add query client for devtools
-	window.__TANSTACK_QUERY_CLIENT__ = queryClient;
-}
 
 const router = createRouter({
 	routeTree,
-	context: {
-		queryClient,
-	},
 });
 
 declare module "@tanstack/solid-router" {
@@ -53,12 +33,4 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 	);
 }
 
-if (root)
-	render(
-		() => (
-			<QueryClientProvider client={queryClient}>
-				<RouterProvider router={router} />
-			</QueryClientProvider>
-		),
-		root,
-	);
+if (root) render(() => <RouterProvider router={router} />, root);

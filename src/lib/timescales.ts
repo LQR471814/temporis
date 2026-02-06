@@ -1,4 +1,3 @@
-import type { Enums } from "./supabase/types.gen";
 import { now } from "./utils";
 
 export interface Timescale {
@@ -182,12 +181,12 @@ export class Daypart implements Timescale {
 		end: number;
 		name: string;
 	}[] = [
-		{ start: 0, end: 5, name: "0—4" },
-		{ start: 5, end: 12, name: "5—11" },
-		{ start: 12, end: 17, name: "12—16" },
-		{ start: 17, end: 21, name: "17—20" },
-		{ start: 21, end: 24, name: "21—23" },
-	];
+			{ start: 0, end: 5, name: "0—4" },
+			{ start: 5, end: 12, name: "5—11" },
+			{ start: 12, end: 17, name: "12—16" },
+			{ start: 17, end: 21, name: "17—20" },
+			{ start: 21, end: 24, name: "21—23" },
+		];
 
 	private getDaypart(now: Temporal.ZonedDateTime) {
 		for (const p of Daypart.partitions) {
@@ -242,7 +241,7 @@ function startOfDay(now: Temporal.ZonedDateTime) {
 	});
 }
 
-export const decade = new Decade();
+export const tenyear = new Decade();
 export const fiveyear = new FiveYear();
 export const year = new Year();
 export const quarter = new Quarter();
@@ -272,63 +271,56 @@ export function durationOf(timescale: Timescale) {
 	return instance.end.since(instance.start);
 }
 
-export function timescaleTypeOf(timescale: Timescale): Enums<"timescale_type"> {
+export function timescaleTypeOf(timescale: Timescale): TimescaleType {
 	switch (timescale) {
-		case decade:
-			return "ten_year";
+		case tenyear:
+			return TimescaleType.ten_year;
 		case fiveyear:
-			return "five_year";
+			return TimescaleType.five_year;
 		case year:
-			return "year";
+			return TimescaleType.year;
 		case quarter:
-			return "quarter";
+			return TimescaleType.quarter;
 		case month:
-			return "month";
+			return TimescaleType.month;
 		case week:
-			return "week";
+			return TimescaleType.week;
 		case day:
-			return "day";
+			return TimescaleType.day;
 		case daypart:
-			return "daypart";
+			return TimescaleType.daypart;
 	}
 	throw new Error(`unknown timescale! ${timescale.name}`);
 }
 
-export function timescaleFromType(type: Enums<"timescale_type">): Timescale {
+export function timescaleFromType(type: TimescaleType): Timescale {
 	switch (type) {
-		case "ten_year":
-			return decade;
-		case "five_year":
+		case TimescaleType.all_time:
+			break;
+		case TimescaleType.lifetime:
+			break;
+		case TimescaleType.ten_year:
+			return tenyear;
+		case TimescaleType.five_year:
 			return fiveyear;
-		case "year":
+		case TimescaleType.year:
 			return year;
-		case "quarter":
+		case TimescaleType.quarter:
 			return quarter;
-		case "month":
+		case TimescaleType.month:
 			return month;
-		case "week":
+		case TimescaleType.week:
 			return week;
-		case "day":
+		case TimescaleType.day:
 			return day;
-		case "daypart":
+		case TimescaleType.daypart:
 			return daypart;
 	}
 	throw new Error(`unknown timescale! ${type}`);
 }
 
-export const hierarchyTypes: Enums<"timescale_type">[] = [
-	"daypart",
-	"day",
-	"week",
-	"month",
-	"quarter",
-	"year",
-	"five_year",
-	"ten_year",
-];
-
 export const hierarchy = [
-	decade,
+	tenyear,
 	fiveyear,
 	year,
 	quarter,
@@ -337,3 +329,21 @@ export const hierarchy = [
 	day,
 	daypart,
 ];
+
+export enum TimescaleType {
+	daypart,
+	day,
+	week,
+	month,
+	quarter,
+	year,
+	five_year,
+	ten_year,
+	lifetime,
+	all_time,
+}
+
+export enum ImplementationType {
+	hours,
+	children,
+}

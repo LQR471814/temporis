@@ -7,7 +7,7 @@ create table task (
 	timescale int not null,
 	timeframe_start int not null,
 
-	assigned_to blob references executor(id)
+	assigned_to int references executor(id)
 		on update cascade
 		on delete set null,
 	parent_id int not null references task(id)

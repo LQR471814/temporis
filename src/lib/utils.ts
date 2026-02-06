@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
+import { Generator } from "snowflake-generator";
 import { createEffect, createRoot, createSignal } from "solid-js";
 import { twMerge } from "tailwind-merge";
 
@@ -47,4 +48,9 @@ export function asUTCDate(dt: string | Date) {
 		return new Date(dt);
 	}
 	return new Date(`${dt}Z`);
+}
+
+export function randomSnowflakeID() {
+	const generator = new Generator(Temporal.Now.instant().epochMilliseconds);
+	return generator.generate() as bigint;
 }

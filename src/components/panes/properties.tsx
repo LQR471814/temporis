@@ -4,7 +4,11 @@ import { useLiveQuery } from "@tanstack/solid-db";
 import { createMemo, Match, Show, Switch, useContext } from "solid-js";
 import { tasksCollection } from "src/lib/collections";
 import { ROOT_ID } from "src/lib/constants";
-import { type Timescale, timescaleFromType } from "src/lib/timescales";
+import {
+	ImplementationType,
+	type Timescale,
+	timescaleFromType,
+} from "src/lib/timescales";
 import { asInstant, cn, currentTz } from "src/lib/utils";
 import {
 	CurrentTaskContext,
@@ -59,20 +63,29 @@ function FormFields(props: {
 						<p class="text-sm font-medium">Estimate</p>
 						<Tabs
 							onChange={(value) => {
-								switch (value) {
-									case "hours":
-									case "children":
-										field().handleChange(value);
+								const val = parseInt(value, 10);
+								switch (val) {
+									case ImplementationType.hours:
+									case ImplementationType.children:
+										field().handleChange(val);
 								}
 							}}
-							value={field().state.value}
+							value={field().state.value.toString()}
 							class="w-[400px]"
 						>
 							<TabsList class="grid w-full grid-cols-2">
-								<TabsTrigger value="hours">Hours</TabsTrigger>
-								<TabsTrigger value="children">Children</TabsTrigger>
+								<TabsTrigger value={ImplementationType.hours.toString()}>
+									Hours
+								</TabsTrigger>
+								<TabsTrigger value={ImplementationType.children.toString()}>
+									Children
+								</TabsTrigger>
 							</TabsList>
-							<TabsContent class="flex gap-2" value="hours">
+
+							<TabsContent
+								class="flex gap-2"
+								value={ImplementationType.hours.toString()}
+							>
 								<form.Field
 									name="optimistic"
 									validators={{
@@ -123,7 +136,10 @@ function FormFields(props: {
 								/>
 							</TabsContent>
 
-							<TabsContent class="flex gap-2" value="children">
+							<TabsContent
+								class="flex gap-2"
+								value={ImplementationType.children.toString()}
+							>
 								<form.Field
 									name="pessimistic"
 									validators={{
@@ -186,7 +202,7 @@ function FormFields(props: {
 					);
 					const parent = createMemo(
 						// biome-ignore lint/style/noNonNullAssertion: this is guaranteed to exist
-						() => tasksCollection.get(field().state.value)!,
+						() => tasksCollection.get(field().state.value.toString())!,
 					);
 					return (
 						<div class="max-w-[220px]">

@@ -1,8 +1,3 @@
-import {
-	type Collection,
-	createCollection,
-	liveQueryCollectionOptions,
-} from "@tanstack/solid-db";
 import { createForm } from "@tanstack/solid-form";
 import { DragDropProvider, DragDropSensors } from "@thisbeyond/solid-dnd";
 import {
@@ -13,44 +8,40 @@ import {
 } from "solid-js";
 import { showToast } from "src/components/ui/toast";
 import { tasksCollection } from "src/lib/collections";
-import type { Enums } from "src/lib/supabase/types.gen";
+import type { task } from "src/lib/trailbase";
+import { randomSnowflakeID } from "src/lib/utils";
 import { ROOT_ID } from "~/lib/constants";
 import {
+	ImplementationType,
 	type Timescale,
 	type TimescaleInstance,
+	TimescaleType,
 	timescaleTypeOf,
 } from "~/lib/timescales";
-
-// TODO: improve this hack!
-const __collection = createCollection(
-	liveQueryCollectionOptions({
-		query: (q) => q.from({ task: tasksCollection }),
-	}),
-);
-type TaskFields = typeof __collection extends Collection<infer U> ? U : never;
 
 function currentTaskValue() {
 	const [shown, setShown] = createSignal<"selected" | "new_child" | "none">(
 		"none",
 	);
 	const [selectedTaskId, setSelectedTaskId] = createSignal<
-		string | undefined
+		bigint | undefined
 	>();
 
 	function form(onsubmit: () => void) {
 		return createForm(() => ({
 			defaultValues: {
+				id: randomSnowflakeID(),
 				name: "",
 				comments: "",
-				implementation: "hours",
+				implementation: ImplementationType.hours,
 				optimistic: 0.5,
 				expected: 1,
 				pessimistic: 1.5,
 				timeframe_start: 0,
-				timescale: "week",
+				timescale: TimescaleType.week,
 				parent_id: ROOT_ID,
-				assigned_to: null,
-			} as TaskFields,
+				assigned_to: undefined,
+			} as typeof task.schema.infer,
 			onSubmit: onsubmit,
 		}));
 	}
@@ -73,14 +64,12 @@ function currentTaskValue() {
 		});
 	});
 
-	let lastMove: Promise<void> | null = null;
-
 	return {
 		shown,
 		selectedTaskId,
 		forms: { edit, creation },
-		selectTask(taskId: string) {
-			const task = tasksCollection.get(taskId);
+		selectTask(taskId: bigint) {
+			const task = tasksCollection.get(taskId.toString());
 			if (!task) throw new Error("taskId is invalid");
 			batch(() => {
 				edit.reset(task);
@@ -119,9 +108,9 @@ function currentTaskValue() {
 				optimistic: 0.5,
 				expected: 1,
 				pessimistic: 1.5,
-				implementation: "hours",
+				implementation: ImplementationType.hours,
 				parent_id: ROOT_ID,
-				assigned_to: null,
+				assigned_to: undefined,
 			});
 			showToast({
 				title: "Fields reset.",
@@ -130,7 +119,7 @@ function currentTaskValue() {
 			});
 		},
 		deleteTask() {
-			tasksCollection.delete(edit.state.values.id);
+			tasksCollection.delete(edit.state.values.id.toString());
 			showToast({
 				title: `Task deleted: ${edit.state.values.name}`,
 				variant: "success",
@@ -139,26 +128,17 @@ function currentTaskValue() {
 			edit.reset();
 			setShown("none");
 		},
-		async move(
-			id: string,
+		move(
+			id: bigint,
 			newTimeframeStart: Temporal.ZonedDateTime,
-			newTimescale: Enums<"timescale_type">,
+			newTimescale: TimescaleType,
 		) {
-			const val = tasksCollection.get(id);
+			const val = tasksCollection.get(id.toString());
 			if (!val) throw new Error(`unknown task: ${id}`);
-			// not using update because that causes state issues!
-			// TODO: pretty sure this an issue with tanstack db, will wait for a fix
-			lastMove = (async () => {
-				await lastMove;
-				const result = tasksCollection.delete(val.id);
-				await result.isPersisted.promise;
-				const result2 = tasksCollection.insert({
-					...val,
-					timeframe_start: newTimeframeStart.epochMilliseconds,
-					timescale: newTimescale,
-				});
-				await result2.isPersisted.promise;
-			})();
+			tasksCollection.update(val.id.toString(), (val) => {
+				val.timeframe_start = newTimeframeStart.epochMilliseconds;
+				val.timescale = newTimescale;
+			});
 		},
 	};
 }
@@ -168,7 +148,7 @@ export type CurrentTaskValue = ReturnType<typeof currentTaskValue>;
 export const CurrentTaskContext = createContext<CurrentTaskValue>();
 
 export type DragData = {
-	taskId: string;
+	taskId: bigint;
 };
 
 export type DroppableData = {

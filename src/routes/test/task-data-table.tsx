@@ -10,7 +10,7 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import { createEffect, Show } from "solid-js";
 import { debug } from "src/components/debug";
 import { DataTable } from "~/components/ui/data-table";
-import { executorsCollection, tasksCollection } from "~/lib/collections/tables";
+import { executorCollection, tasksCollection } from "~/lib/collections/tables";
 
 const joinedTasks = createCollection(
 	liveQueryCollectionOptions({
@@ -18,7 +18,7 @@ const joinedTasks = createCollection(
 		query: (q) =>
 			q
 				.from({ task: tasksCollection })
-				.leftJoin({ executor: executorsCollection }, ({ task, executor }) =>
+				.leftJoin({ executor: executorCollection }, ({ task, executor }) =>
 					eq(task.assigned_to, executor.id),
 				)
 				.innerJoin({ parent: tasksCollection }, ({ task, parent }) =>

@@ -12,6 +12,7 @@
 		"moduleResolution": "bundler",
 		"noEmit": true,
 		// Type Checking & Safety
+		"skipLibCheck": true,
 		"strict": true,
 		"types": [
 			"vite/client"

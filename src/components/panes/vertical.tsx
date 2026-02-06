@@ -4,7 +4,7 @@ import { TaskChipContext } from "~/context/task-chip";
 import {
 	day,
 	daypart,
-	decade,
+	tenyear,
 	fiveyear,
 	month,
 	quarter,
@@ -18,7 +18,7 @@ export function VerticalTimeframes(props: { class?: string }) {
 	return (
 		<TaskChipContext.Provider value={{ namespace: "vertical" }}>
 			<div class={cn("flex flex-col gap-1 p-1 overflow-y-auto", props.class)}>
-				<Timeframe timescale={decade} time={currentTime()} />
+				<Timeframe timescale={tenyear} time={currentTime()} />
 				<Timeframe timescale={fiveyear} time={currentTime()} />
 				<Timeframe timescale={year} time={currentTime()} />
 				<Timeframe timescale={quarter} time={currentTime()} />

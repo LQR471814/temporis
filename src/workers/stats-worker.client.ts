@@ -1,5 +1,6 @@
 import { tasksCollection } from "src/lib/collections";
 import type { Task } from "src/lib/stats";
+import { ImplementationType } from "src/lib/timescales";
 import type { Action, Request } from "./stats-worker";
 
 const worker = new Worker(new URL("./stats-worker.ts", import.meta.url), {
@@ -36,7 +37,7 @@ worker.onmessage = (e) => {
 	}
 };
 
-export function evalStats(taskIds: string[], action: Action) {
+export function evalStats(taskIds: bigint[], action: Action) {
 	const tasks: Task[] = [];
 	getTaskBFS(tasks, taskIds);
 
@@ -66,31 +67,31 @@ export function evalStats(taskIds: string[], action: Action) {
 	});
 }
 
-function getTaskBFS(result: Task[], ids: string[]) {
-	const queue: string[] = [...ids];
+function getTaskBFS(result: Task[], ids: bigint[]) {
+	const queue: bigint[] = [...ids];
 	while (true) {
 		const id = queue.pop();
 		if (id === undefined) {
 			break;
 		}
-		const task = tasksCollection.get(id);
+		const task = tasksCollection.get(id.toString());
 		if (!task) {
 			throw new Error(`could not find task: ${id}`);
 		}
 		const resultTask: Task = {
 			pert:
-				task.implementation === "hours"
+				task.implementation === ImplementationType.hours
 					? {
-							pessimistic: task.pessimistic,
-							expected: task.expected,
-							optimistic: task.optimistic,
-						}
+						pessimistic: task.pessimistic,
+						expected: task.expected,
+						optimistic: task.optimistic,
+					}
 					: // convert percentage to proportion
-						{
-							pessimistic: task.pessimistic / 100,
-							expected: task.expected / 100,
-							optimistic: task.optimistic / 100,
-						},
+					{
+						pessimistic: task.pessimistic / 100,
+						expected: task.expected / 100,
+						optimistic: task.optimistic / 100,
+					},
 			children: [],
 		};
 		for (const [, row] of tasksCollection.entries()) {

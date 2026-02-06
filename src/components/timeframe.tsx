@@ -13,13 +13,13 @@ import {
 	useContext,
 } from "solid-js";
 import { ViewContext } from "src/context/view";
-import type { Enums, Tables } from "src/lib/supabase/types.gen";
+import type { task } from "src/lib/trailbase";
 import { evalStats } from "src/workers/stats-worker.client";
 import { CurrentTaskContext, type DroppableData } from "~/context/current-task";
 import { tasksCollection } from "~/lib/collections";
 import {
-	hierarchyTypes,
 	type Timescale,
+	TimescaleType,
 	timescaleTypeOf,
 } from "~/lib/timescales";
 import { cn } from "~/lib/utils";
@@ -32,7 +32,7 @@ function usePercentileDuration(
 	percentile: Accessor<number>,
 	tasks: Accessor<
 		{
-			id: string;
+			id: bigint;
 			optimistic: number;
 			expected: number;
 			pessimistic: number;
@@ -40,7 +40,7 @@ function usePercentileDuration(
 	>,
 	dependencies: Accessor<
 		{
-			id: string;
+			id: bigint;
 			optimistic: number;
 			expected: number;
 			pessimistic: number;
@@ -72,12 +72,12 @@ function usePercentileDuration(
 				cached instanceof Promise
 					? cached
 					: evalStats(
-							tasks().map((t) => t.id),
-							{
-								type: "percentile",
-								percentile: p,
-							},
-						);
+						tasks().map((t) => t.id),
+						{
+							type: "percentile",
+							percentile: p,
+						},
+					);
 
 			cachedPercentiles.set(hash, promise);
 
@@ -103,17 +103,18 @@ function usePercentileDuration(
 }
 
 function getTaskAnalysis(
-	currentTimescale: Enums<"timescale_type">,
-	allTasks: Tables<"task">[],
+	currentTimescale: TimescaleType,
+	allTasks: (typeof task.schema.infer)[],
 ) {
 	// find all tasks with a parent_id not in the list
-	const ids = new Set<string>();
+	const ids = new Set<bigint>();
 	for (const t of allTasks) {
+		if (t.id === undefined) throw new Error("id is missing!");
 		ids.add(t.id);
 	}
 	let hidden = 0;
-	const indep: Tables<"task">[] = [];
-	const dependent: Tables<"task">[] = [];
+	const indep: (typeof task.schema.infer)[] = [];
+	const dependent: (typeof task.schema.infer)[] = [];
 	for (const t of allTasks) {
 		if (!ids.has(t.parent_id)) {
 			if (t.timescale !== currentTimescale) {
@@ -160,23 +161,17 @@ export function Timeframe(props: {
 		// the query's where callback)
 		const tfstart = instance().start.epochMilliseconds;
 		const tfend = instance().end.epochMilliseconds;
-		const currentTimescaleHierarchyIdx = hierarchyTypes.indexOf(
-			timescaleType(),
-		);
+		const currentTimescaleHierarchyIdx = timescaleType();
 		return q
 			.from({ task: tasksCollection })
 			.where(({ task }) =>
 				and(
-					not(eq(task.timescale, "all_time")),
+					not(eq(task.timescale, TimescaleType.all_time)),
 					gte(task.timeframe_start, tfstart),
 					lt(task.timeframe_start, tfend),
 				),
 			)
-			.fn.where(
-				({ task }) =>
-					hierarchyTypes.indexOf(task.timescale) <=
-					currentTimescaleHierarchyIdx,
-			);
+			.fn.where(({ task }) => task.timescale <= currentTimescaleHierarchyIdx);
 	});
 	const taskAnalysis = createMemo(() =>
 		getTaskAnalysis(timescaleType(), tasksInTimeframe()),
@@ -232,13 +227,13 @@ export function Timeframe(props: {
 			}))}
 			duration={duration()}
 			hiddenTasks={taskAnalysis().hidden}
-			// hiddenTasksDuration={otherTaskDuration.duration()}
+		// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
 	);
 }
 
 type TaskElementParams = {
-	id: string;
+	id: bigint;
 	name: string;
 	onClick(): void;
 };

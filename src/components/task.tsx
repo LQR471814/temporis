@@ -39,19 +39,19 @@ function Display(props: {
 }
 
 export function TaskChip(props: {
-	id: string;
+	id: bigint;
 	name: string;
 	color: string;
 	onClick: () => void;
 	class?: string;
 }) {
 	const ctx = useContext(TaskChipContext);
-	const id = createMemo(() =>
-		ctx?.namespace ? `${ctx.namespace}:${props.id}` : props.id,
+	const dragId = createMemo(() =>
+		ctx?.namespace ? `${ctx.namespace}:${props.id}` : props.id.toString(),
 	);
 	try {
 		const draggable = createMemo(() =>
-			createDraggable(id(), { taskId: props.id } satisfies DragData),
+			createDraggable(dragId(), { taskId: props.id } satisfies DragData),
 		);
 		return (
 			<Display
