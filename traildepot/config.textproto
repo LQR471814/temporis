@@ -9,3 +9,26 @@ auth {
   refresh_token_ttl_sec: 2592000
 }
 jobs {}
+record_apis: [
+  {
+    name: "task"
+    table_name: "task"
+    enable_subscriptions: true
+    conflict_resolution: REPLACE
+    acl_world: [CREATE, READ, UPDATE, DELETE, SCHEMA]
+  },
+  {
+    name: "executor"
+    table_name: "executor"
+    enable_subscriptions: true
+    conflict_resolution: REPLACE
+    acl_world: [CREATE, READ, UPDATE, DELETE, SCHEMA]
+  },
+  {
+    name: "executor_occupied"
+    table_name: "executor_occupied"
+    enable_subscriptions: true
+    conflict_resolution: REPLACE
+    acl_world: [CREATE, READ, UPDATE, DELETE, SCHEMA]
+  }
+]
