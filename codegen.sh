@@ -1,12 +1,8 @@
-function record-schema {
-	curl "http://localhost:4000/api/records/v1/$1/schema" -o ".schema.$1.json"
-	echo ".schema.$1.json"
+function gen-record {
+	curl "http://localhost:4000/api/records/v1/$1/schema" | pnpm exec quicktype -o "./src/lib/trailbase/$1.gen.ts"
 }
 
-pnpm exec quicktype -o "./src/lib/trailbase/types.gen.ts" \
-	"$(record-schema task)" \
-	"$(record-schema executor)" \
-	"$(record-schema executor_occupied)"
-
-rm .schema.*.json
+gen-record task
+gen-record executor
+gen-record executor_occupied
 

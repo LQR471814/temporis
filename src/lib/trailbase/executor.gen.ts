@@ -1,38 +1,38 @@
 // To parse this data:
 //
-//   import { Convert, TypesGen } from "./file";
+//   import { Convert, ExecutorGen } from "./file";
 //
-//   const typesGen = Convert.toTypesGen(json);
+//   const executorGen = Convert.toExecutorGen(json);
 //
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
 
-export interface TypesGen {
-    properties: { [key: string]: Property };
+export interface ExecutorGen {
+    properties: Properties;
     required:   string[];
     title:      string;
     type:       string;
 }
 
-export interface Property {
-    type: Type;
+export interface Properties {
+    comments: Comments;
+    id:       Comments;
+    name:     Comments;
 }
 
-export enum Type {
-    Integer = "integer",
-    Number = "number",
-    String = "string",
+export interface Comments {
+    type: string;
 }
 
 // Converts JSON strings to/from your types
 // and asserts the results of JSON.parse at runtime
 export class Convert {
-    public static toTypesGen(json: string): TypesGen {
-        return cast(JSON.parse(json), r("TypesGen"));
+    public static toExecutorGen(json: string): ExecutorGen {
+        return cast(JSON.parse(json), r("ExecutorGen"));
     }
 
-    public static typesGenToJson(value: TypesGen): string {
-        return JSON.stringify(uncast(value, r("TypesGen")), null, 2);
+    public static executorGenToJson(value: ExecutorGen): string {
+        return JSON.stringify(uncast(value, r("ExecutorGen")), null, 2);
     }
 }
 
@@ -189,18 +189,18 @@ function r(name: string) {
 }
 
 const typeMap: any = {
-    "TypesGen": o([
-        { json: "properties", js: "properties", typ: m(r("Property")) },
+    "ExecutorGen": o([
+        { json: "properties", js: "properties", typ: r("Properties") },
         { json: "required", js: "required", typ: a("") },
         { json: "title", js: "title", typ: "" },
         { json: "type", js: "type", typ: "" },
     ], false),
-    "Property": o([
-        { json: "type", js: "type", typ: r("Type") },
+    "Properties": o([
+        { json: "comments", js: "comments", typ: r("Comments") },
+        { json: "id", js: "id", typ: r("Comments") },
+        { json: "name", js: "name", typ: r("Comments") },
     ], false),
-    "Type": [
-        "integer",
-        "number",
-        "string",
-    ],
+    "Comments": o([
+        { json: "type", js: "type", typ: "" },
+    ], false),
 };
