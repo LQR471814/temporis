@@ -22,9 +22,10 @@ import {
 	TimescaleType,
 	timescaleTypeOf,
 } from "~/lib/timescales";
-import { cn } from "~/lib/utils";
+import { cn, useLiveQueryNoReconcile } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
+import { TaskChipContext } from "src/context/task-chip";
 
 const cachedPercentiles = new Map<string, number | Promise<number>>();
 
@@ -150,6 +151,8 @@ export function Timeframe(props: {
 }) {
 	// timeframe calculations
 
+	const taskChipContext = useContext(TaskChipContext);
+
 	const instance = createMemo(() => props.timescale.instance(props.time));
 	const timescaleType = createMemo(() => timescaleTypeOf(props.timescale));
 	const timeframeDuration = createMemo(() =>
@@ -159,7 +162,7 @@ export function Timeframe(props: {
 	// dnd
 
 	const droppable = createDroppable(
-		`${props.timescale.name} ${props.time.toString()}`,
+		`${taskChipContext?.namespace}:${props.timescale.name}:${props.time.toString()}`,
 		{
 			timeframeStart: () => instance().start,
 			timescale: () => props.timescale,
@@ -168,7 +171,9 @@ export function Timeframe(props: {
 
 	// task
 
-	const tasksInTimeframe = useLiveQuery((q) => {
+	// not performant, but fixes the correctness issues of useLiveQuery as a
+	// result of calling reconcile()
+	const tasksInTimeframe = useLiveQueryNoReconcile((q) => {
 		// for some reason, this isn't rerun unless the dependencies are
 		// explicitly stated here (do not compute these values from within
 		// the query's where callback)

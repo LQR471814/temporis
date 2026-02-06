@@ -46,7 +46,7 @@ function currentTaskValue() {
 		}));
 	}
 	const edit = form(() => {
-		tasksCollection.update(edit.state.values.id, (val) => {
+		tasksCollection.update(edit.state.values.id.toString(), (val) => {
 			Object.assign(val, edit.state.values);
 		});
 		showToast({

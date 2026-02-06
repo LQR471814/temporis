@@ -11,7 +11,7 @@
       children of child tasks.
     - [x] Bug: Make estimates of parent task update when child
       tasks update their durations.
-    - [ ] Bug: Make moving tasks work properly.
+    - [x] Bug: Make moving tasks work properly.
     - [x] Bug: Make estimates update properly.
 - Features:
     - [ ] Feature: Add UI to view the children tasks and total
