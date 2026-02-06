@@ -34,4 +34,6 @@
       horizontal components not get hidden by CSS overflow
       controls.
     - [ ] Enhance: Space usage of properties pane.
+    - [ ] Enhance: Make typescript solid-js directives work with
+      Typescript.
 
