@@ -1,3 +1,5 @@
+// biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
+
 import type { PolymorphicProps } from "@kobalte/core";
 import * as TextFieldPrimitive from "@kobalte/core/text-field";
 import type { AnyFieldApi, FieldApi } from "@tanstack/solid-form";

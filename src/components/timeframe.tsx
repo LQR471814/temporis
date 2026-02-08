@@ -1,5 +1,5 @@
 import { debounce } from "@tanstack/pacer";
-import { and, eq, gte, lt, not, useLiveQuery } from "@tanstack/solid-db";
+import { and, eq, gte, lt, not } from "@tanstack/solid-db";
 import { createDroppable } from "@thisbeyond/solid-dnd";
 import {
 	type Accessor,
@@ -25,7 +25,6 @@ import {
 import { cn, useLiveQueryNoReconcile } from "~/lib/utils";
 import { TaskChip } from "./task";
 import { Button } from "./ui/button";
-import { TaskChipContext } from "src/context/task-chip";
 
 const cachedPercentiles = new Map<string, number | Promise<number>>();
 
@@ -87,12 +86,12 @@ function usePercentileDuration(
 				cached instanceof Promise
 					? cached
 					: evalStats(
-						tasks.map((t) => t.id),
-						{
-							type: "percentile",
-							percentile: p,
-						},
-					);
+							tasks.map((t) => t.id),
+							{
+								type: "percentile",
+								percentile: p,
+							},
+						);
 
 			cachedPercentiles.set(hash, promise);
 
@@ -243,7 +242,7 @@ export function Timeframe(props: {
 			}))}
 			duration={duration()}
 			hiddenTasks={taskAnalysis().hidden}
-		// hiddenTasksDuration={otherTaskDuration.duration()}
+			// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
 	);
 }

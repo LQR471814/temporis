@@ -4,10 +4,10 @@ import { TaskChipContext } from "~/context/task-chip";
 import {
 	day,
 	daypart,
-	tenyear,
 	fiveyear,
 	month,
 	quarter,
+	tenyear,
 	week,
 	year,
 } from "~/lib/timescales";

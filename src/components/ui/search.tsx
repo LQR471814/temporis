@@ -2,7 +2,7 @@
 
 import { createFilter } from "@kobalte/core";
 import type { Fn, Pipe, Tuples, Unions } from "hotscript";
-import { createEffect, createMemo, createSignal } from "solid-js";
+import { createMemo, createSignal } from "solid-js";
 import {
 	Combobox,
 	ComboboxContent,
@@ -45,9 +45,6 @@ export function Search<
 			),
 		);
 	};
-	createEffect(() => {
-		console.log(selected()?.name);
-	});
 	return (
 		<Combobox
 			name={props.name}

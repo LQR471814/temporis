@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: lots of typescript shenanigans happening here
 
-import { useLiveQuery, not, eq } from "@tanstack/solid-db";
+import { useLiveQuery } from "@tanstack/solid-db";
 import { Match, Show, Switch, useContext } from "solid-js";
 import { tasksCollection } from "src/lib/collections";
 import { ROOT_ID } from "src/lib/constants";

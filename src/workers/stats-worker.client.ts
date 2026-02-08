@@ -82,16 +82,16 @@ function getTaskBFS(result: Task[], ids: string[]) {
 			pert:
 				task.implementation === ImplementationType.hours
 					? {
-						pessimistic: task.pessimistic,
-						expected: task.expected,
-						optimistic: task.optimistic,
-					}
+							pessimistic: task.pessimistic,
+							expected: task.expected,
+							optimistic: task.optimistic,
+						}
 					: // convert percentage to proportion
-					{
-						pessimistic: task.pessimistic / 100,
-						expected: task.expected / 100,
-						optimistic: task.optimistic / 100,
-					},
+						{
+							pessimistic: task.pessimistic / 100,
+							expected: task.expected / 100,
+							optimistic: task.optimistic / 100,
+						},
 			children: [],
 		};
 		for (const [, row] of tasksCollection.entries()) {

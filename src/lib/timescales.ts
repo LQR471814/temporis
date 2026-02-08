@@ -181,12 +181,12 @@ export class Daypart implements Timescale {
 		end: number;
 		name: string;
 	}[] = [
-			{ start: 0, end: 5, name: "0—4" },
-			{ start: 5, end: 12, name: "5—11" },
-			{ start: 12, end: 17, name: "12—16" },
-			{ start: 17, end: 21, name: "17—20" },
-			{ start: 21, end: 24, name: "21—23" },
-		];
+		{ start: 0, end: 5, name: "0—4" },
+		{ start: 5, end: 12, name: "5—11" },
+		{ start: 12, end: 17, name: "12—16" },
+		{ start: 17, end: 21, name: "17—20" },
+		{ start: 21, end: 24, name: "21—23" },
+	];
 
 	private getDaypart(now: Temporal.ZonedDateTime) {
 		for (const p of Daypart.partitions) {
