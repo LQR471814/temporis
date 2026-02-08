@@ -36,4 +36,5 @@
     - [ ] Enhance: Space usage of properties pane.
     - [ ] Enhance: Make typescript solid-js directives work with
       Typescript.
+    - [ ] Enhance: Make the parent selector work properly.
 
