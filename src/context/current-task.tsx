@@ -54,6 +54,8 @@ function currentTaskValue() {
 		});
 	});
 	const creation = form(() => {
+		// always generate a new ID before creating a task, ensure no conflicts
+		creation.setFieldValue("id", generateID());
 		tasksCollection.insert([creation.state.values]);
 		showToast({
 			title: `Task created: ${creation.state.values.name}`,
