@@ -8,6 +8,7 @@
 		"dev": "vite",
 		"build": "vite build",
 		"serve": "vite preview",
+		"test": "vitest",
 		"check": "biome check --write --unsafe",
 		"codegen": "tsx codegen.ts",
 		"tscheck": "tsgo -b"
@@ -35,7 +36,8 @@
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.2",
 		"vite": "npm:rolldown-vite@latest",
-		"vite-plugin-solid": "^2.11.8"
+		"vite-plugin-solid": "^2.11.8",
+		"vitest": "^4.0.18"
 	},
 	"dependencies": {
 		"@ark-ui/solid": "^5.30.0",

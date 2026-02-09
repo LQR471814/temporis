@@ -109,6 +109,7 @@ function usePercentileDuration(
 	);
 
 	createEffect(() => {
+		console.log("recompute", percentile());
 		calculate(tasks(), dependencies(), percentile());
 	});
 

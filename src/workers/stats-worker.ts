@@ -2,6 +2,7 @@ import { type Task, taskTimeDigest } from "~/lib/stats";
 
 export type Action = {
 	type: "percentile";
+	// a number from 0-100
 	percentile: number;
 };
 
@@ -22,7 +23,7 @@ self.onmessage = ({ data }) => {
 					self.postMessage({ id: req.id, value: 0 });
 					break;
 				}
-				const value = digest.percentile(req.action.percentile);
+				const value = digest.percentile(req.action.percentile / 100);
 				self.postMessage({ id: req.id, value });
 				break;
 			}
