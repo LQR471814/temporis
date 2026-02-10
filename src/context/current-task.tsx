@@ -8,8 +8,6 @@ import {
 } from "solid-js";
 import { showToast } from "src/components/ui/toast";
 import { tasksCollection } from "src/lib/collections";
-import type { task } from "src/lib/trailbase";
-import { generateID } from "src/lib/utils";
 import {
 	ImplementationType,
 	ROOT_ID,
@@ -21,6 +19,8 @@ import {
 	type TimescaleInstance,
 	timescaleTypeOf,
 } from "src/lib/timescales";
+import type { task } from "src/lib/trailbase";
+import { generateID } from "src/lib/utils";
 
 function currentTaskValue() {
 	const [shown, setShown] = createSignal<"selected" | "new_child" | "none">(
@@ -137,9 +137,23 @@ function currentTaskValue() {
 		) {
 			const val = tasksCollection.get(id.toString());
 			if (!val) throw new Error(`unknown task: ${id}`);
-			tasksCollection.update(id.toString(), (val) => {
+			tasksCollection.update(id, (val) => {
 				val.timeframe_start = newTimeframeStart.epochMilliseconds;
 				val.timescale = newTimescale;
+			});
+		},
+		toggleTaskStatus(id: string) {
+			tasksCollection.update(id, (val) => {
+				switch (val.status) {
+					case StatusType.pending:
+						val.status = StatusType.completed;
+						break;
+					case StatusType.completed:
+						val.status = StatusType.pending;
+						break;
+					case StatusType.fixed:
+						break;
+				}
 			});
 		},
 	};

@@ -1,6 +1,6 @@
-import { evalStats } from "src/workers/stats-worker.client";
 import { debounce } from "@tanstack/pacer";
 import { type Accessor, createEffect, createSignal } from "solid-js";
+import { evalStats } from "src/workers/stats-worker.client";
 
 const cachedPercentiles = new Map<string, number | Promise<number>>();
 
@@ -62,12 +62,12 @@ export function usePercentileDuration(
 				cached instanceof Promise
 					? cached
 					: evalStats(
-						tasks.map((t) => t.id),
-						{
-							type: "percentile",
-							percentile: p,
-						},
-					);
+							tasks.map((t) => t.id),
+							{
+								type: "percentile",
+								percentile: p,
+							},
+						);
 
 			cachedPercentiles.set(hash, promise);
 

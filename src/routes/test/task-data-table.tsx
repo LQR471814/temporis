@@ -10,7 +10,10 @@ import type { ColumnDef } from "@tanstack/solid-table";
 import { createEffect, Show } from "solid-js";
 import { debug } from "src/components/debug";
 import { DataTable } from "src/components/ui/data-table";
-import { executorCollection, tasksCollection } from "src/lib/collections/tables";
+import {
+	executorCollection,
+	tasksCollection,
+} from "src/lib/collections/tables";
 
 const joinedTasks = createCollection(
 	liveQueryCollectionOptions({

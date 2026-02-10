@@ -1,6 +1,6 @@
-import { useCurrentTime } from "src/context/view";
 import { Timeframe } from "src/components/timeframe";
 import { TaskChipContext } from "src/context/task-chip";
+import { useCurrentTime } from "src/context/view";
 import {
 	day,
 	daypart,

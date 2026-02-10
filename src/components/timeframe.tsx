@@ -7,7 +7,7 @@ import {
 } from "src/context/current-task";
 import { ViewContext } from "src/context/view";
 import { tasksCollection } from "src/lib/collections";
-import { StatusType, TimescaleType } from "src/lib/constants";
+import { type StatusType, TimescaleType } from "src/lib/constants";
 import { type Timescale, timescaleTypeOf } from "src/lib/timescales";
 import type { task } from "src/lib/trailbase";
 import { usePercentileDuration } from "src/lib/use-percentile";
@@ -142,10 +142,13 @@ export function Timeframe(props: {
 				onClick: () => {
 					currentTaskCtx?.selectTask(t.id);
 				},
+				onClickStatus: () => {
+					currentTaskCtx?.toggleTaskStatus(t.id);
+				},
 			}))}
 			duration={duration()}
 			hiddenTasks={taskAnalysis().hidden}
-		// hiddenTasksDuration={otherTaskDuration.duration()}
+			// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
 	);
 }
@@ -155,6 +158,7 @@ type TaskElementParams = {
 	name: string;
 	status: StatusType;
 	onClick(): void;
+	onClickStatus(): void;
 };
 
 type DurationStats = {
@@ -219,6 +223,7 @@ function Display(props: {
 							status={task.status}
 							name={task.name}
 							onClick={task.onClick}
+							onClickStatus={task.onClickStatus}
 						/>
 					)}
 				</For>

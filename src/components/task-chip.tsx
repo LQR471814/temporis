@@ -10,11 +10,13 @@ function Display(props: {
 	name: string;
 	color: string;
 	onClick: () => void;
-	ref?: HTMLButtonElement | ((el: HTMLButtonElement) => void);
+	onClickStatus: () => void;
+	ref?: HTMLDivElement | ((el: HTMLDivElement) => void);
 }) {
 	return (
-		<button
-			type="button"
+		// biome-ignore lint/a11y/noStaticElementInteractions: need to nest buttons
+		// biome-ignore lint/a11y/useKeyWithClickEvents: no keyboard method of input
+		<div
 			class={cn(
 				"flex items-center gap-2 max-w-[300px]",
 				"rounded-md border shadow-sm px-2 hover:bg-primary/5 transition-colors bg-background",
@@ -24,18 +26,18 @@ function Display(props: {
 			onClick={props.onClick}
 			ref={props.ref}
 		>
-			<div
+			<button
+				type="button"
 				classList={{
-					"aspect-square": true,
-					"p-1": true,
-					"rounded-full": true,
+					"aspect-square p-1 rounded-full": true,
 					[props.color]: true,
 				}}
-			/>
+				onClick={props.onClickStatus}
+			></button>
 			<p class="text-start overflow-hidden line-clamp-2 text-ellipsis">
 				{props.name}
 			</p>
-		</button>
+		</div>
 	);
 }
 
@@ -44,6 +46,7 @@ export function TaskChip(props: {
 	name: string;
 	status: StatusType;
 	onClick: () => void;
+	onClickStatus: () => void;
 	class?: string;
 }) {
 	const ctx = useContext(TaskChipContext);
@@ -79,6 +82,7 @@ export function TaskChip(props: {
 			name={props.name}
 			color={color()}
 			onClick={props.onClick}
+			onClickStatus={props.onClickStatus}
 			ref={draggable()}
 		/>
 	);
