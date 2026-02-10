@@ -97,7 +97,13 @@ function FormFields(props: {
 	const parentOptions = useLiveQuery((q) => q.from({ tasks: tasksCollection }));
 	const form = props.form;
 	return (
-		<div class="grid grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr),minmax(min-content,1fr)] gap-2">
+		<div
+			classList={{
+				"grid grid-cols-[minmax(min-content,1fr)] gap-2": true,
+				"xl:grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr),minmax(min-content,1fr)]": true,
+				"lg:grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr)]": true,
+			}}
+		>
 			<div class="flex flex-col gap-1">
 				<div class="flex gap-1">
 					<form.Field
@@ -108,7 +114,6 @@ function FormFields(props: {
 						}}
 						children={(field) => (
 							<FormTextField
-								class="max-w-[180px]"
 								field={field()}
 								transform={(v) => v}
 								label="Name"
