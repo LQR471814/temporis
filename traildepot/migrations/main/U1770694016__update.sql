@@ -1,5 +1,7 @@
 -- add the status field
 
+PRAGMA foreign_keys = OFF;
+
 create table task1 (
 	id blob primary key check(is_uuid_v7(id)),
 	name text not null,
@@ -12,7 +14,7 @@ create table task1 (
 	assigned_to blob references executor(id)
 		on update cascade
 		on delete set null,
-	parent_id blob not null references task(id)
+	parent_id blob not null references task1(id)
 		on update cascade
 		on delete cascade,
 
@@ -54,3 +56,5 @@ from task;
 
 drop table task;
 alter table task1 rename to task;
+
+PRAGMA foreign_keys = ON;
