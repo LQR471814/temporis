@@ -7,7 +7,7 @@ import {
 } from "src/context/current-task";
 import { ViewContext } from "src/context/view";
 import { tasksCollection } from "src/lib/collections";
-import { TimescaleType } from "src/lib/constants";
+import { StatusType, TimescaleType } from "src/lib/constants";
 import { type Timescale, timescaleTypeOf } from "src/lib/timescales";
 import type { task } from "src/lib/trailbase";
 import { usePercentileDuration } from "src/lib/use-percentile";
@@ -92,7 +92,9 @@ export function Timeframe(props: {
 		getTaskAnalysis(timescaleType(), tasksInTimeframe()),
 	);
 	const shownTasks = createMemo(() =>
-		tasksInTimeframe().filter((t) => t.timescale === timescaleType()),
+		tasksInTimeframe()
+			.filter((t) => t.timescale === timescaleType())
+			.sort((a, b) => a.status - b.status),
 	);
 
 	// percentile computation
@@ -136,6 +138,7 @@ export function Timeframe(props: {
 			tasks={shownTasks().map((t) => ({
 				id: t.id,
 				name: t.name,
+				status: t.status,
 				onClick: () => {
 					currentTaskCtx?.selectTask(t.id);
 				},
@@ -150,6 +153,7 @@ export function Timeframe(props: {
 type TaskElementParams = {
 	id: string;
 	name: string;
+	status: StatusType;
 	onClick(): void;
 };
 
@@ -212,8 +216,8 @@ function Display(props: {
 						<TaskChip
 							class="z-10"
 							id={task.id}
+							status={task.status}
 							name={task.name}
-							color="bg-gray-500"
 							onClick={task.onClick}
 						/>
 					)}

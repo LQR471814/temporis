@@ -2,6 +2,7 @@ import { createDraggable } from "@thisbeyond/solid-dnd";
 import { createMemo, useContext } from "solid-js";
 import type { DragData } from "src/context/current-task";
 import { TaskChipContext } from "src/context/task-chip";
+import { StatusType } from "src/lib/constants";
 import { cn } from "src/lib/utils";
 
 function Display(props: {
@@ -41,7 +42,7 @@ function Display(props: {
 export function TaskChip(props: {
 	id: string;
 	name: string;
-	color: string;
+	status: StatusType;
 	onClick: () => void;
 	class?: string;
 }) {
@@ -52,11 +53,21 @@ export function TaskChip(props: {
 	const draggable = createMemo(() =>
 		createDraggable(dragId(), { taskId: props.id } satisfies DragData),
 	);
+	const color = createMemo(() => {
+		switch (props.status) {
+			case StatusType.pending:
+				return "bg-gray-500";
+			case StatusType.completed:
+				return "bg-green-500";
+			case StatusType.fixed:
+				return "bg-gray-300";
+		}
+	});
 	return (
 		<Display
 			class={cn("draggable", props.class)}
 			name={props.name}
-			color={props.color}
+			color={color()}
 			onClick={props.onClick}
 			ref={draggable()}
 		/>
