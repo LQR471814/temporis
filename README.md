@@ -33,7 +33,7 @@
     - [ ] Enhance: Make dragging tasks between the vertical and
       horizontal components not get hidden by CSS overflow
       controls.
-    - [ ] Enhance: Space usage of properties pane.
+    - [x] Enhance: Space usage of properties pane.
     - [ ] Enhance: Make typescript solid-js directives work with
       Typescript.
     - [ ] Enhance: Make the parent selector work properly.

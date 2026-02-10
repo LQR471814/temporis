@@ -28,34 +28,36 @@ function FormFields(props: {
 	const parentOptions = useLiveQuery((q) => q.from({ tasks: tasksCollection }));
 	const form = props.form;
 	return (
-		<>
-			<form.Field
-				name="name"
-				validators={{
-					onChange: ({ value }) => (!value ? "Name is required" : undefined),
-				}}
-				children={(field) => (
-					<FormTextField
-						class="max-w-[180px]"
-						field={field()}
-						transform={(v) => v}
-						label="Name"
-						type="text"
-						placeholder="Task 1"
-					/>
-				)}
-			/>
-			<form.Field
-				name="comments"
-				children={(field) => (
-					<FormMultilineText
-						class="max-w-[400px]"
-						field={field()}
-						label="Comments"
-						placeholder="Comments..."
-					/>
-				)}
-			/>
+		<div class="grid grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr),minmax(min-content,1fr)] gap-2">
+			<div class="flex flex-col gap-1">
+				<form.Field
+					name="name"
+					validators={{
+						onChange: ({ value }) => (!value ? "Name is required" : undefined),
+					}}
+					children={(field) => (
+						<FormTextField
+							class="max-w-[180px]"
+							field={field()}
+							transform={(v) => v}
+							label="Name"
+							type="text"
+							placeholder="Task 1"
+						/>
+					)}
+				/>
+				<form.Field
+					name="comments"
+					children={(field) => (
+						<FormMultilineText
+							class="max-w-[400px]"
+							field={field()}
+							label="Comments"
+							placeholder="Comments..."
+						/>
+					)}
+				/>
+			</div>
 
 			<form.Field
 				name="implementation"
@@ -222,7 +224,7 @@ function FormFields(props: {
 					);
 				}}
 			/>
-		</>
+		</div>
 	);
 }
 
@@ -326,7 +328,7 @@ export function Properties() {
 		);
 	}
 	return (
-		<div class="flex flex-col gap-2 w-full h-full p-2">
+		<div class="flex flex-col gap-2 w-full p-2">
 			<Switch>
 				<Match when={taskCtx.shown() === "new_child"}>
 					<Form
