@@ -14,25 +14,26 @@ export function HorizontalControlled() {
 	const scrollRef = useBottomScrollRef();
 	return (
 		<TaskChipContext.Provider value={{ namespace: "horizontal" }}>
-			<div class="flex-1 flex flex-col overflow-y-auto pt-16" ref={scrollRef}>
-				<For each={timescales.hierarchy}>
-					{(scale, i) => {
-						const parent = createMemo(() => {
-							if (i() - 1 < 0) {
-								return timescales.ninety;
-							}
-							return timescales.hierarchy[i() - 1];
-						});
-						return (
-							<Horizontal
-								class="p-1 max-h-[300px]"
-								parent={parent()}
-								child={scale}
-								now={viewInstant()}
-							/>
-						);
-					}}
-				</For>
+			<div class="h-[100vh] overflow-y-auto" ref={scrollRef}>
+				<div class="flex-1 flex flex-col gap-1 pt-16">
+					<For each={timescales.hierarchy}>
+						{(scale, i) => {
+							const parent = createMemo(() => {
+								if (i() - 1 < 0) {
+									return timescales.ninety;
+								}
+								return timescales.hierarchy[i() - 1];
+							});
+							return (
+								<Horizontal
+									parent={parent()}
+									child={scale}
+									now={viewInstant()}
+								/>
+							);
+						}}
+					</For>
+				</div>
 			</div>
 		</TaskChipContext.Provider>
 	);
