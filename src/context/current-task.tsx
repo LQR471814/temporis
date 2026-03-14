@@ -113,6 +113,7 @@ function currentTaskValue() {
 				return;
 			}
 			batch(() => {
+				editForm.handleSubmit();
 				createTaskForm.setFieldValue("parent_id", editForm.getFieldValue("id"));
 				setShown("new_task");
 			});
