@@ -14,6 +14,7 @@ import { usePercentileDuration } from "src/lib/use-percentile";
 import { cn, useLiveQueryNoReconcile } from "src/lib/utils";
 import { TaskChip } from "./task-chip";
 import { Button } from "./ui/button";
+import { ScrollerContext } from "src/context/scroller";
 
 function getTaskAnalysis(
 	currentTimescale: TimescaleType,
@@ -122,6 +123,9 @@ export function Timeframe(props: {
 
 	const currentTaskCtx = useContext(CurrentTaskContext);
 
+	const scrollerCtx = useContext(ScrollerContext);
+	if (!scrollerCtx) throw new Error("timeframe not under ScrollerContext!");
+
 	return (
 		<Display
 			class={props.class}
@@ -130,23 +134,22 @@ export function Timeframe(props: {
 			ref={droppable}
 			isDroppingOver={droppable.isActiveDroppable}
 			onSelectAction={() => {
-				viewCtx?.setViewPortion(instance());
+				scrollerCtx.persistScroll(() => viewCtx?.setViewPortion(instance()));
 			}}
 			onCreateAction={() => {
-				if (!currentTaskCtx) {
-					return;
-				}
-				currentTaskCtx.newChildAt(instance());
+				scrollerCtx.persistScroll(() => currentTaskCtx?.newChildAt(instance()));
 			}}
 			tasks={shownTasks().map((t) => ({
 				id: t.id,
 				name: t.name,
 				status: t.status,
 				onClick: () => {
-					currentTaskCtx?.selectTask(t.id);
+					scrollerCtx.persistScroll(() => currentTaskCtx?.selectTask(t.id));
 				},
 				onClickStatus: () => {
-					currentTaskCtx?.toggleTaskStatus(t.id);
+					scrollerCtx.persistScroll(() =>
+						currentTaskCtx?.toggleTaskStatus(t.id),
+					);
 				},
 			}))}
 			duration={duration()}

@@ -1,6 +1,6 @@
-import { useContext, createMemo, For } from "solid-js";
+import { createMemo, For } from "solid-js";
 import { Timeframe } from "src/components/timeframe";
-import { useViewTimeInstant, ViewContext } from "src/context/view";
+import { useViewTimeInstant } from "src/context/view";
 import { childInstancesOf, type Timescale } from "src/lib/timescales";
 import { cn } from "src/lib/utils";
 

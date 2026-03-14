@@ -23,7 +23,10 @@ function Display(props: {
 				"cursor-default touch-none text-sm",
 				props.class,
 			)}
-			onClick={props.onClick}
+			onClick={(e) => {
+				e.stopPropagation();
+				props.onClick();
+			}}
 			ref={props.ref}
 		>
 			<button

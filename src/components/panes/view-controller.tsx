@@ -10,18 +10,21 @@ import { TextField, TextFieldInput } from "src/components/ui/text-field";
 import { useViewTimeInstant, ViewContext } from "src/context/view";
 import { TimeDisplay } from "../time-display";
 import { cn } from "src/lib/utils";
+import { ScrollerContext } from "src/context/scroller";
 
 export function ViewController(props: { class?: string }) {
 	const ctx = useContext(ViewContext);
+	if (!ctx) throw new Error("ViewContext.Provider is missing");
+
+	const scrollCtx = useContext(ScrollerContext);
+	if (!scrollCtx) throw new Error("view-controller not under ScrollerContext");
+
 	const viewInstant = useViewTimeInstant();
-	if (!ctx) {
-		return <p>ViewContext.Provider is missing</p>;
-	}
 
 	return (
 		<div
 			class={cn(
-				"flex flex-wrap gap-1 p-1 bg-background rounded-md",
+				"flex flex-wrap gap-1 p-1 bg-background rounded-lg border border-border",
 				props.class,
 			)}
 		>
@@ -56,7 +59,7 @@ export function ViewController(props: { class?: string }) {
 				class="text-primary/20"
 				variant="outline"
 				onClick={() => {
-					ctx.reset();
+					scrollCtx.persistScroll(() => ctx.reset());
 				}}
 			>
 				<svg
