@@ -46,7 +46,7 @@ function viewValue() {
 				}));
 			});
 			lastUpdateTime = Temporal.Now.zonedDateTimeISO();
-		}, 60 * 1000);
+		}, 600 * 1000);
 		return () => clearInterval(id);
 	});
 
