@@ -30,9 +30,6 @@
 - Nice to haves:
     - [ ] Enhance: Make the UI higher contrast.
     - [ ] Enhance: Make a proper dark mode.
-    - [ ] Enhance: Make dragging tasks between the vertical and
-      horizontal components not get hidden by CSS overflow
-      controls.
     - [x] Enhance: Space usage of properties pane.
     - [ ] Enhance: Make typescript solid-js directives work with
       Typescript.
