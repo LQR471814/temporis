@@ -19,6 +19,7 @@ import * as Select from "../ui/select";
 import { Separator } from "../ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { FormMultilineText, FormTextField } from "../ui/text-field";
+import { ScrollerContext } from "src/context/scroller";
 
 function IconText(props: {
 	class?: string;
@@ -93,6 +94,8 @@ function StatusTypeText(props: { type: StatusType }) {
 function FormFields(props: {
 	form: CurrentTaskValue["forms"][keyof CurrentTaskValue["forms"]];
 }) {
+	const scrollerCtx = useContext(ScrollerContext);
+	if (!scrollerCtx) throw new Error("FormFields is not under ScrollerContext");
 	const currentTaskCtx = useContext(CurrentTaskContext);
 	if (!currentTaskCtx)
 		throw new Error("FormFields is not under CurrentTaskContext");
@@ -314,7 +317,14 @@ function FormFields(props: {
 										)}
 									/>
 								</div>
-								<Button class="w-fit" onClick={currentTaskCtx.createChildTask}>
+								<Button
+									class="w-fit"
+									onClick={() => {
+										scrollerCtx.persistScroll(() =>
+											currentTaskCtx.createChildTask(),
+										);
+									}}
+								>
 									Create child
 								</Button>
 							</TabsContent>
