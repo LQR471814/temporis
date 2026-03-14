@@ -78,15 +78,3 @@ export function useLiveQueryNoReconcile<TContext extends Context>(
 	// biome-ignore lint/suspicious/noExplicitAny: typescript pain
 	return () => value as any;
 }
-
-export function useBottomScrollRef() {
-	let scrollEl!: HTMLDivElement;
-	onMount(() => {
-		setTimeout(() => {
-			scrollEl.scrollTop = scrollEl.scrollHeight;
-		}, 500);
-	});
-	return (el: HTMLDivElement) => {
-		scrollEl = el;
-	};
-}
