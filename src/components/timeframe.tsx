@@ -42,6 +42,114 @@ function getTaskAnalysis(
 	return { independent, dependent, hidden };
 }
 
+type TaskElementParams = {
+	id: string;
+	name: string;
+	status: StatusType;
+	onClick(): void;
+	onClickStatus(): void;
+};
+
+type DurationStats = {
+	filledHours: number;
+	totalHours: number;
+};
+
+function Display(props: {
+	class?: string;
+	label: string;
+	accented?: boolean;
+	isDroppingOver: boolean;
+	onSelectAction(): void;
+	onCreateAction(): void;
+	ref(el: HTMLButtonElement): void;
+	tasks: TaskElementParams[];
+	duration: null | DurationStats | Error;
+	hiddenTasks: number;
+	// hiddenTasksDuration: number | null;
+}) {
+	return (
+		<button
+			type="button"
+			class={cn(
+				"flex flex-col min-h-[100px] group relative h-fit",
+				"border border-muted rounded-lg",
+				"transition-colors hover:border-primary/30 cursor-default",
+				props.class,
+			)}
+			classList={{ "bg-muted": props.isDroppingOver }}
+			onClick={props.onSelectAction}
+			onDblClick={props.onCreateAction}
+			ref={props.ref}
+		>
+			<div
+				classList={{
+					"flex justify-between items-center sticky top-0 z-20": true,
+					"rounded-t-lg bg-background border-b border-muted px-2 py-1": true,
+					"transition-colors group-hover:border-primary/30": true,
+				}}
+			>
+				<p
+					classList={{
+						"text-sm": true,
+						"font-bold": props.accented,
+					}}
+				>
+					{props.label}
+				</p>
+				<Button
+					class="px-1 py-0 h-min aspect-square text-primary/30"
+					variant="ghost"
+					onClick={(e) => {
+						e.stopPropagation();
+						props.onCreateAction();
+					}}
+				>
+					＋
+				</Button>
+			</div>
+			<div class="flex flex-col gap-1 p-1">
+				<For each={props.tasks}>
+					{(task) => (
+						<TaskChip
+							class="z-10"
+							id={task.id}
+							status={task.status}
+							name={task.name}
+							onClick={task.onClick}
+							onClickStatus={task.onClickStatus}
+						/>
+					)}
+				</For>
+				<Show when={props.hiddenTasks > 0}>
+					<div class="border border-dashed text-primary/30 rounded-md">
+						<p class="text-center text-sm">
+							{props.hiddenTasks} lower-level tasks
+							{/* ({props.hiddenTasksDuration?.toFixed(1) ?? "..."}h) */}
+						</p>
+					</div>
+				</Show>
+				<Switch>
+					<Match when={props.duration instanceof Error}>
+						<p class="text-sm text-red-500">
+							Estimate failed: {(props.duration as Error).message}
+						</p>
+					</Match>
+					<Match when={props.duration !== null}>
+						<p class="text-sm whitespace-nowrap">
+							{(props.duration as DurationStats).filledHours?.toFixed(1)}h /{" "}
+							{(props.duration as DurationStats).totalHours}h
+						</p>
+					</Match>
+					<Match when={props.duration === null}>
+						<p>...</p>
+					</Match>
+				</Switch>
+			</div>
+		</button>
+	);
+}
+
 export function Timeframe(props: {
 	class?: string;
 	timescale: Timescale;
@@ -156,113 +264,5 @@ export function Timeframe(props: {
 			hiddenTasks={taskAnalysis().hidden}
 		// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
-	);
-}
-
-type TaskElementParams = {
-	id: string;
-	name: string;
-	status: StatusType;
-	onClick(): void;
-	onClickStatus(): void;
-};
-
-type DurationStats = {
-	filledHours: number;
-	totalHours: number;
-};
-
-function Display(props: {
-	class?: string;
-	label: string;
-	accented?: boolean;
-	isDroppingOver: boolean;
-	onSelectAction(): void;
-	onCreateAction(): void;
-	ref(el: HTMLButtonElement): void;
-	tasks: TaskElementParams[];
-	duration: null | DurationStats | Error;
-	hiddenTasks: number;
-	// hiddenTasksDuration: number | null;
-}) {
-	return (
-		<button
-			type="button"
-			class={cn(
-				"flex flex-col min-h-[100px] group relative h-fit",
-				"border border-muted rounded-lg",
-				"transition-colors hover:border-primary/30 cursor-default",
-				props.class,
-			)}
-			classList={{ "bg-muted": props.isDroppingOver }}
-			onClick={props.onSelectAction}
-			onDblClick={props.onCreateAction}
-			ref={props.ref}
-		>
-			<div
-				classList={{
-					"flex justify-between items-center sticky top-0 z-20": true,
-					"rounded-t-lg bg-background border-b border-muted px-2 py-1": true,
-					"transition-colors group-hover:border-primary/30": true,
-				}}
-			>
-				<p
-					classList={{
-						"text-sm": true,
-						"font-bold": props.accented,
-					}}
-				>
-					{props.label}
-				</p>
-				<Button
-					class="px-1 py-0 h-min aspect-square text-primary/30"
-					variant="ghost"
-					onClick={(e) => {
-						e.stopPropagation();
-						props.onCreateAction();
-					}}
-				>
-					＋
-				</Button>
-			</div>
-			<div class="flex flex-col gap-1 p-1">
-				<For each={props.tasks}>
-					{(task) => (
-						<TaskChip
-							class="z-10"
-							id={task.id}
-							status={task.status}
-							name={task.name}
-							onClick={task.onClick}
-							onClickStatus={task.onClickStatus}
-						/>
-					)}
-				</For>
-				<Show when={props.hiddenTasks > 0}>
-					<div class="border border-dashed text-primary/30 rounded-md">
-						<p class="text-center text-sm">
-							{props.hiddenTasks} lower-level tasks
-							{/* ({props.hiddenTasksDuration?.toFixed(1) ?? "..."}h) */}
-						</p>
-					</div>
-				</Show>
-				<Switch>
-					<Match when={props.duration instanceof Error}>
-						<p class="text-sm text-red-500">
-							Estimate failed: {(props.duration as Error).message}
-						</p>
-					</Match>
-					<Match when={props.duration !== null}>
-						<p class="text-sm whitespace-nowrap">
-							{(props.duration as DurationStats).filledHours?.toFixed(1)}h /{" "}
-							{(props.duration as DurationStats).totalHours}h
-						</p>
-					</Match>
-					<Match when={props.duration === null}>
-						<p>...</p>
-					</Match>
-				</Switch>
-			</div>
-		</button>
 	);
 }
