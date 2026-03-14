@@ -43,6 +43,12 @@ class SubCenturyMultiYear implements Timescale {
 	}
 }
 
+export class Ninety extends SubCenturyMultiYear {
+	constructor() {
+		super(90);
+	}
+}
+
 export class Decade extends SubCenturyMultiYear {
 	constructor() {
 		super(10);
@@ -182,12 +188,12 @@ export class Daypart implements Timescale {
 		end: number;
 		name: string;
 	}[] = [
-		{ start: 0, end: 5, name: "0—4" },
-		{ start: 5, end: 12, name: "5—11" },
-		{ start: 12, end: 17, name: "12—16" },
-		{ start: 17, end: 21, name: "17—20" },
-		{ start: 21, end: 24, name: "21—23" },
-	];
+			{ start: 0, end: 5, name: "0—4" },
+			{ start: 5, end: 12, name: "5—11" },
+			{ start: 12, end: 17, name: "12—16" },
+			{ start: 17, end: 21, name: "17—20" },
+			{ start: 21, end: 24, name: "21—23" },
+		];
 
 	private getDaypart(now: Temporal.ZonedDateTime) {
 		for (const p of Daypart.partitions) {
@@ -242,6 +248,7 @@ function startOfDay(now: Temporal.ZonedDateTime) {
 	});
 }
 
+export const ninety = new Ninety();
 export const tenyear = new Decade();
 export const fiveyear = new FiveYear();
 export const year = new Year();
@@ -274,6 +281,8 @@ export function durationOf(timescale: Timescale) {
 
 export function timescaleTypeOf(timescale: Timescale): TimescaleType {
 	switch (timescale) {
+		case ninety:
+			return TimescaleType.lifetime;
 		case tenyear:
 			return TimescaleType.ten_year;
 		case fiveyear:
@@ -299,7 +308,7 @@ export function timescaleFromType(type: TimescaleType): Timescale {
 		case TimescaleType.all_time:
 			break;
 		case TimescaleType.lifetime:
-			break;
+			return ninety;
 		case TimescaleType.ten_year:
 			return tenyear;
 		case TimescaleType.five_year:

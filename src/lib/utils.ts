@@ -9,6 +9,7 @@ import {
 import { type ClassValue, clsx } from "clsx";
 import {
 	type Accessor,
+	onMount,
 	createEffect,
 	createMemo,
 	createRoot,
@@ -93,4 +94,14 @@ export function useLiveQueryNoReconcile<TContext extends Context>(
 	});
 	// biome-ignore lint/suspicious/noExplicitAny: typescript pain
 	return () => value as any;
+}
+
+export function useBottomScrollRef() {
+	let scrollEl!: HTMLDivElement;
+	onMount(() => {
+		scrollEl.scrollTop = scrollEl.scrollHeight;
+	});
+	return (el: HTMLDivElement) => {
+		scrollEl = el;
+	};
 }

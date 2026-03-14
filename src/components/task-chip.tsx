@@ -18,7 +18,7 @@ function Display(props: {
 		// biome-ignore lint/a11y/useKeyWithClickEvents: no keyboard method of input
 		<div
 			class={cn(
-				"flex items-center gap-2 max-w-[300px]",
+				"flex items-center gap-2",
 				"rounded-md border shadow-sm px-2 hover:bg-primary/5 transition-colors bg-background",
 				"cursor-default touch-none text-sm",
 				props.class,

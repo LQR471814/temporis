@@ -57,6 +57,7 @@ function currentTaskValue() {
 			duration: 3000,
 		});
 	});
+
 	const creation = form(() => {
 		// always generate a new ID before creating a task, ensure no conflicts
 		creation.setFieldValue("id", generateID());
@@ -71,6 +72,9 @@ function currentTaskValue() {
 	return {
 		shown,
 		forms: { edit, creation },
+		closeProperties() {
+			setShown("none");
+		},
 		selectTask(taskId: string) {
 			const task = tasksCollection.get(taskId.toString());
 			if (!task) throw new Error("taskId is invalid");

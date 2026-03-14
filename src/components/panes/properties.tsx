@@ -99,8 +99,6 @@ function FormFields(props: {
 		<div
 			classList={{
 				"grid grid-cols-[minmax(min-content,1fr)] gap-2": true,
-				"xl:grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr),minmax(min-content,1fr)]": true,
-				"lg:grid-cols-[minmax(min-content,1fr),minmax(min-content,1fr)]": true,
 			}}
 		>
 			<div class="flex flex-col gap-1">
@@ -344,10 +342,23 @@ function Header(props: {
 	start: Temporal.ZonedDateTime;
 	duration: Temporal.Duration;
 	timescale: Timescale;
+	onClose(): void;
 }) {
 	return (
 		<>
-			<h1 class="text-lg">{props.title}</h1>
+			<div class="flex justify-between gap-2">
+				<h1 class="text-lg">{props.title}</h1>
+				<Button class="p-2 size-8" variant="ghost" onClick={props.onClose}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="currentColor"
+					>
+						<title>Close</title>
+						<path d="M11.9997 10.5865L16.9495 5.63672L18.3637 7.05093L13.4139 12.0007L18.3637 16.9504L16.9495 18.3646L11.9997 13.4149L7.04996 18.3646L5.63574 16.9504L10.5855 12.0007L5.63574 7.05093L7.04996 5.63672L11.9997 10.5865Z"></path>
+					</svg>
+				</Button>
+			</div>
 			<div class="flex items-center">
 				<Badge variant="secondary">{props.timescale.name}</Badge>
 				<TimeDisplay time={props.start} minDuration={props.duration} />
@@ -366,6 +377,7 @@ function Form(props: {
 		title: string;
 		onAction(): void;
 	};
+	closeAction: () => void;
 }) {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
@@ -377,7 +389,7 @@ function Form(props: {
 	}
 	const form = taskCtx.forms[props.key];
 	return (
-		<div class="flex flex-col gap-2 w-full p-2">
+		<div class="flex flex-col gap-2 p-2">
 			<form.Subscribe
 				selector={(state) => {
 					const timescale = timescaleFromType(state.values.timescale);
@@ -396,6 +408,7 @@ function Form(props: {
 						duration={selected().end.since(
 							selected().start.toZonedDateTimeISO(currentTz()),
 						)}
+						onClose={props.closeAction}
 					/>
 				)}
 			/>
@@ -410,6 +423,7 @@ function Form(props: {
 							return;
 						}
 						form.handleSubmit();
+						props.closeAction();
 					}}
 				>
 					{props.actionTitle}
@@ -427,7 +441,7 @@ function Form(props: {
 	);
 }
 
-export function Properties() {
+export function Properties(props: { class?: string }) {
 	const taskCtx = useContext(CurrentTaskContext);
 	if (!taskCtx) {
 		return (
@@ -438,37 +452,41 @@ export function Properties() {
 			</div>
 		);
 	}
+	const handleClose = () => {
+		taskCtx.closeProperties();
+	};
 	return (
-		<Switch>
-			<Match when={taskCtx.shown() === "new_child"}>
-				<Form
-					title="Creating task..."
-					actionTitle="Create"
-					key="creation"
-					secondaryAction={{
-						class: "bg-red-600 hover:bg-red-500",
-						title: "Reset",
-						onAction: taskCtx.resetNewChild,
-					}}
-				/>
-			</Match>
-			<Match when={taskCtx.shown() === "selected"}>
-				<Form
-					title="Editing task..."
-					actionTitle="Save"
-					key="edit"
-					secondaryAction={{
-						class: "bg-red-600 hover:bg-red-500",
-						title: "Delete",
-						onAction: taskCtx.deleteTask,
-					}}
-				/>
-			</Match>
-			<Match when={taskCtx.shown() === "none"}>
-				<div class="flex min-h-[300px]">
-					<p class="m-auto">No task selected.</p>
-				</div>
-			</Match>
-		</Switch>
+		<div
+			class={cn("bg-background rounded-md border border-border", props.class)}
+		>
+			<Switch>
+				<Match when={taskCtx.shown() === "new_child"}>
+					<Form
+						title="Creating task..."
+						actionTitle="Create"
+						key="creation"
+						secondaryAction={{
+							class: "bg-red-600 hover:bg-red-500",
+							title: "Reset",
+							onAction: taskCtx.resetNewChild,
+						}}
+						closeAction={handleClose}
+					/>
+				</Match>
+				<Match when={taskCtx.shown() === "selected"}>
+					<Form
+						title="Editing task..."
+						actionTitle="Save"
+						key="edit"
+						secondaryAction={{
+							class: "bg-red-600 hover:bg-red-500",
+							title: "Delete",
+							onAction: taskCtx.deleteTask,
+						}}
+						closeAction={handleClose}
+					/>
+				</Match>
+			</Switch>
+		</div>
 	);
 }

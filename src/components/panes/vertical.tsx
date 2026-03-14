@@ -1,6 +1,6 @@
 import { Timeframe } from "src/components/timeframe";
 import { TaskChipContext } from "src/context/task-chip";
-import { useCurrentTime } from "src/context/view";
+import { useViewTimeInstant } from "src/context/view";
 import {
 	day,
 	daypart,
@@ -11,21 +11,25 @@ import {
 	week,
 	year,
 } from "src/lib/timescales";
-import { cn } from "src/lib/utils";
+import { cn, useBottomScrollRef } from "src/lib/utils";
 
 export function VerticalTimeframes(props: { class?: string }) {
-	const currentTime = useCurrentTime();
+	const viewInstant = useViewTimeInstant();
+	const scrollRef = useBottomScrollRef();
 	return (
 		<TaskChipContext.Provider value={{ namespace: "vertical" }}>
-			<div class={cn("flex flex-col gap-1 p-1 overflow-y-auto", props.class)}>
-				<Timeframe timescale={tenyear} time={currentTime()} />
-				<Timeframe timescale={fiveyear} time={currentTime()} />
-				<Timeframe timescale={year} time={currentTime()} />
-				<Timeframe timescale={quarter} time={currentTime()} />
-				<Timeframe timescale={month} time={currentTime()} />
-				<Timeframe timescale={week} time={currentTime()} />
-				<Timeframe timescale={day} time={currentTime()} />
-				<Timeframe timescale={daypart} time={currentTime()} />
+			<div
+				class={cn("flex flex-col gap-1 p-1 overflow-y-auto", props.class)}
+				ref={scrollRef}
+			>
+				<Timeframe timescale={tenyear} time={viewInstant()} />
+				<Timeframe timescale={fiveyear} time={viewInstant()} />
+				<Timeframe timescale={year} time={viewInstant()} />
+				<Timeframe timescale={quarter} time={viewInstant()} />
+				<Timeframe timescale={month} time={viewInstant()} />
+				<Timeframe timescale={week} time={viewInstant()} />
+				<Timeframe timescale={day} time={viewInstant()} />
+				<Timeframe timescale={daypart} time={viewInstant()} />
 			</div>
 		</TaskChipContext.Provider>
 	);

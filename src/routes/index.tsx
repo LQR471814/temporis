@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/solid-router";
 import { HorizontalControlled } from "src/components/panes/horizontal-controlled";
 import { Properties } from "src/components/panes/properties";
-import { VerticalTimeframes } from "src/components/panes/vertical";
 import { ViewController } from "src/components/panes/view-controller";
 import { Separator } from "src/components/ui/separator";
 import { CurrentTaskProvider } from "src/context/current-task";
@@ -15,19 +14,13 @@ function RouteComponent() {
 	return (
 		<ViewProvider>
 			<CurrentTaskProvider>
-				<div class="grid grid-rows-[min-content,min-content,minmax(0,1fr)] rounded-lg border h-full">
-					<ViewController />
+				<HorizontalControlled />
+				<Properties class="fixed z-40 top-3 left-3" />
+				<ViewController class="fixed z-40 top-3 right-3" />
+				<div class="fixed top-0 left-0 z-40">
 					<Separator />
-					<div class="flex flex-1">
-						<div class="min-w-[200px] overflow-y-auto">
-							<VerticalTimeframes />
-						</div>
+					<div class="grid grid-cols-[300px,min-content,1fr]">
 						<Separator orientation="vertical" />
-						<div class="flex flex-col flex-1">
-							<HorizontalControlled />
-							<Separator />
-							<Properties />
-						</div>
 					</div>
 				</div>
 			</CurrentTaskProvider>

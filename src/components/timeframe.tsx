@@ -129,6 +129,9 @@ export function Timeframe(props: {
 			accented={props.accented}
 			ref={droppable}
 			isDroppingOver={droppable.isActiveDroppable}
+			onSelectAction={() => {
+				viewCtx?.setViewPortion(instance());
+			}}
 			onCreateAction={() => {
 				if (!currentTaskCtx) {
 					return;
@@ -148,7 +151,7 @@ export function Timeframe(props: {
 			}))}
 			duration={duration()}
 			hiddenTasks={taskAnalysis().hidden}
-			// hiddenTasksDuration={otherTaskDuration.duration()}
+		// hiddenTasksDuration={otherTaskDuration.duration()}
 		/>
 	);
 }
@@ -171,6 +174,7 @@ function Display(props: {
 	label: string;
 	accented?: boolean;
 	isDroppingOver: boolean;
+	onSelectAction(): void;
 	onCreateAction(): void;
 	ref(el: HTMLButtonElement): void;
 	tasks: TaskElementParams[];
@@ -188,6 +192,7 @@ function Display(props: {
 				props.class,
 			)}
 			classList={{ "bg-muted": props.isDroppingOver }}
+			onClick={props.onSelectAction}
 			onDblClick={props.onCreateAction}
 			ref={props.ref}
 		>
