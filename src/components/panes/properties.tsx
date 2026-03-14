@@ -178,8 +178,17 @@ function FormFields(props: {
 								const val = parseInt(value, 10);
 								switch (val) {
 									case ImplementationType.hours:
-									case ImplementationType.children:
+										form.setFieldValue("optimistic", 0.5);
+										form.setFieldValue("expected", 1);
+										form.setFieldValue("pessimistic", 1.5);
 										field().handleChange(val);
+										break;
+									case ImplementationType.children:
+										form.setFieldValue("pessimistic", 25);
+										form.setFieldValue("expected", 50);
+										form.setFieldValue("optimistic", 75);
+										field().handleChange(val);
+										break;
 								}
 							}}
 							value={field().state.value.toString()}
@@ -249,57 +258,60 @@ function FormFields(props: {
 							</TabsContent>
 
 							<TabsContent
-								class="flex gap-2"
+								class="flex flex-col gap-2"
 								value={ImplementationType.children.toString()}
 							>
-								<form.Field
-									name="pessimistic"
-									validators={{
-										onChange: ({ value }) =>
-											Number.isNaN(value) ? "Not a number!" : undefined,
-									}}
-									children={(field) => (
-										<FormTextField
-											field={field()}
-											transform={(v) => parseFloat(v)}
-											label="Pessimistic %"
-											type="text"
-											placeholder="Percentage"
-										/>
-									)}
-								/>
-								<form.Field
-									name="expected"
-									validators={{
-										onChange: ({ value }) =>
-											Number.isNaN(value) ? "Not a number!" : undefined,
-									}}
-									children={(field) => (
-										<FormTextField
-											field={field()}
-											transform={(v) => parseFloat(v)}
-											label="Expected %"
-											type="text"
-											placeholder="Percentage"
-										/>
-									)}
-								/>
-								<form.Field
-									name="optimistic"
-									validators={{
-										onChange: ({ value }) =>
-											Number.isNaN(value) ? "Not a number!" : undefined,
-									}}
-									children={(field) => (
-										<FormTextField
-											field={field()}
-											transform={(v) => parseFloat(v)}
-											label="Optimistic %"
-											type="text"
-											placeholder="Percentage"
-										/>
-									)}
-								/>
+								<div class="flex gap-2">
+									<form.Field
+										name="pessimistic"
+										validators={{
+											onChange: ({ value }) =>
+												Number.isNaN(value) ? "Not a number!" : undefined,
+										}}
+										children={(field) => (
+											<FormTextField
+												field={field()}
+												transform={(v) => parseFloat(v)}
+												label="Pessimistic %"
+												type="text"
+												placeholder="Percentage"
+											/>
+										)}
+									/>
+									<form.Field
+										name="expected"
+										validators={{
+											onChange: ({ value }) =>
+												Number.isNaN(value) ? "Not a number!" : undefined,
+										}}
+										children={(field) => (
+											<FormTextField
+												field={field()}
+												transform={(v) => parseFloat(v)}
+												label="Expected %"
+												type="text"
+												placeholder="Percentage"
+											/>
+										)}
+									/>
+									<form.Field
+										name="optimistic"
+										validators={{
+											onChange: ({ value }) =>
+												Number.isNaN(value) ? "Not a number!" : undefined,
+										}}
+										children={(field) => (
+											<FormTextField
+												field={field()}
+												transform={(v) => parseFloat(v)}
+												label="Optimistic %"
+												type="text"
+												placeholder="Percentage"
+											/>
+										)}
+									/>
+								</div>
+								<Button class="w-fit">Create child</Button>
 							</TabsContent>
 						</Tabs>
 					</div>
@@ -468,7 +480,7 @@ export function Properties(props: { class?: string }) {
 						secondaryAction={{
 							class: "bg-red-600 hover:bg-red-500",
 							title: "Reset",
-							onAction: taskCtx.resetNewChild,
+							onAction: taskCtx.resetNewTask,
 						}}
 						closeAction={handleClose}
 					/>
