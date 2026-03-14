@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as TestVerticalRouteImport } from './routes/test/vertical'
 import { Route as TestTaskDataTableRouteImport } from './routes/test/task-data-table'
 import { Route as TestStatsRouteImport } from './routes/test/stats'
 import { Route as TestHorizontalRouteImport } from './routes/test/horizontal'
@@ -19,11 +18,6 @@ import { Route as TestDndRouteImport } from './routes/test/dnd'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TestVerticalRoute = TestVerticalRouteImport.update({
-  id: '/test/vertical',
-  path: '/test/vertical',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TestTaskDataTableRoute = TestTaskDataTableRouteImport.update({
@@ -53,7 +47,6 @@ export interface FileRoutesByFullPath {
   '/test/horizontal': typeof TestHorizontalRoute
   '/test/stats': typeof TestStatsRoute
   '/test/task-data-table': typeof TestTaskDataTableRoute
-  '/test/vertical': typeof TestVerticalRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +54,6 @@ export interface FileRoutesByTo {
   '/test/horizontal': typeof TestHorizontalRoute
   '/test/stats': typeof TestStatsRoute
   '/test/task-data-table': typeof TestTaskDataTableRoute
-  '/test/vertical': typeof TestVerticalRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +62,6 @@ export interface FileRoutesById {
   '/test/horizontal': typeof TestHorizontalRoute
   '/test/stats': typeof TestStatsRoute
   '/test/task-data-table': typeof TestTaskDataTableRoute
-  '/test/vertical': typeof TestVerticalRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,7 +71,6 @@ export interface FileRouteTypes {
     | '/test/horizontal'
     | '/test/stats'
     | '/test/task-data-table'
-    | '/test/vertical'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -88,7 +78,6 @@ export interface FileRouteTypes {
     | '/test/horizontal'
     | '/test/stats'
     | '/test/task-data-table'
-    | '/test/vertical'
   id:
     | '__root__'
     | '/'
@@ -96,7 +85,6 @@ export interface FileRouteTypes {
     | '/test/horizontal'
     | '/test/stats'
     | '/test/task-data-table'
-    | '/test/vertical'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +93,6 @@ export interface RootRouteChildren {
   TestHorizontalRoute: typeof TestHorizontalRoute
   TestStatsRoute: typeof TestStatsRoute
   TestTaskDataTableRoute: typeof TestTaskDataTableRoute
-  TestVerticalRoute: typeof TestVerticalRoute
 }
 
 declare module '@tanstack/solid-router' {
@@ -115,13 +102,6 @@ declare module '@tanstack/solid-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/test/vertical': {
-      id: '/test/vertical'
-      path: '/test/vertical'
-      fullPath: '/test/vertical'
-      preLoaderRoute: typeof TestVerticalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/test/task-data-table': {
@@ -161,7 +141,6 @@ const rootRouteChildren: RootRouteChildren = {
   TestHorizontalRoute: TestHorizontalRoute,
   TestStatsRoute: TestStatsRoute,
   TestTaskDataTableRoute: TestTaskDataTableRoute,
-  TestVerticalRoute: TestVerticalRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
