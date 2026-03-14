@@ -1,3 +1,4 @@
+import { debounce } from "@tanstack/pacer";
 import {
 	BaseQueryBuilder,
 	type Context,
@@ -82,6 +83,32 @@ export function useBottomScrollRef() {
 	let scrollEl!: HTMLDivElement;
 	onMount(() => {
 		scrollEl.scrollTop = scrollEl.scrollHeight;
+	});
+	return (el: HTMLDivElement) => {
+		scrollEl = el;
+	};
+}
+
+export function useSavedScroll() {
+	let scrollEl!: HTMLDivElement;
+	const stored = localStorage.getItem("scroll");
+	const scroll = stored ? parseInt(stored, 10) : 0;
+	const save = debounce(
+		() => {
+			localStorage.setItem("scroll", scrollEl.scrollTop.toString());
+		},
+		{
+			wait: 100,
+		},
+	);
+	onMount(() => {
+		console.log(scroll);
+		scrollEl.scrollTo({ top: scroll });
+		scrollEl.addEventListener("scroll", save);
+		return () => {
+			localStorage.setItem("scroll", scrollEl.scrollTop.toString());
+			scrollEl.removeEventListener("scroll", save);
+		};
 	});
 	return (el: HTMLDivElement) => {
 		scrollEl = el;

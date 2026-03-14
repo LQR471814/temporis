@@ -3,7 +3,7 @@ import { TaskChipContext } from "src/context/task-chip";
 import { useViewTimeInstant, ViewContext } from "src/context/view";
 import * as timescales from "src/lib/timescales";
 import { Horizontal } from "../horizontal";
-import { useBottomScrollRef } from "src/lib/utils";
+import { useSavedScroll } from "src/lib/utils";
 
 export function HorizontalControlled() {
 	const ctx = useContext(ViewContext);
@@ -11,7 +11,7 @@ export function HorizontalControlled() {
 		return <p>ViewContext.Provider is missing</p>;
 	}
 	const viewInstant = useViewTimeInstant();
-	const scrollRef = useBottomScrollRef();
+	const scrollRef = useSavedScroll();
 	return (
 		<TaskChipContext.Provider value={{ namespace: "horizontal" }}>
 			<div class="h-[100vh] overflow-y-auto" ref={scrollRef}>
