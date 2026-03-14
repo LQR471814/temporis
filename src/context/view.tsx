@@ -106,7 +106,6 @@ function viewValue() {
 				if (nextTime.equals(prevTime)) {
 					return prev;
 				}
-				lastUpdateTime = nextTime;
 				return { ...prev, viewTime: nextTime };
 			});
 		},
