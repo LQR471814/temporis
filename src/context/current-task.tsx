@@ -1,6 +1,7 @@
 import { createForm } from "@tanstack/solid-form";
 import { DragDropProvider, DragDropSensors } from "@thisbeyond/solid-dnd";
 import {
+	untrack,
 	batch,
 	createContext,
 	createSignal,
@@ -47,23 +48,23 @@ function currentTaskValue() {
 		}));
 	}
 
-	const edit = form(() => {
-		tasksCollection.update(edit.state.values.id.toString(), (val) => {
-			Object.assign(val, edit.state.values);
+	const editForm = form(() => {
+		tasksCollection.update(editForm.state.values.id.toString(), (val) => {
+			Object.assign(val, editForm.state.values);
 		});
 		showToast({
-			title: `Task updated: ${edit.state.values.name}`,
+			title: `Task updated: ${editForm.state.values.name}`,
 			variant: "success",
 			duration: 3000,
 		});
 	});
 
-	const creation = form(() => {
+	const createTaskForm = form(() => {
 		// always generate a new ID before creating a task, ensure no conflicts
-		creation.setFieldValue("id", generateID());
-		tasksCollection.insert([creation.state.values]);
+		createTaskForm.setFieldValue("id", generateID());
+		tasksCollection.insert([createTaskForm.state.values]);
 		showToast({
-			title: `Task created: ${creation.state.values.name}`,
+			title: `Task created: ${createTaskForm.state.values.name}`,
 			variant: "success",
 			duration: 3000,
 		});
@@ -71,7 +72,7 @@ function currentTaskValue() {
 
 	return {
 		shown,
-		forms: { edit, creation },
+		forms: { edit: editForm, creation: createTaskForm },
 		closeProperties() {
 			setShown("none");
 		},
@@ -79,26 +80,26 @@ function currentTaskValue() {
 			const task = tasksCollection.get(taskId.toString());
 			if (!task) throw new Error("taskId is invalid");
 			batch(() => {
-				edit.reset(task);
+				editForm.reset(task);
 				setShown("editing");
 			});
 		},
 		newTaskAt(timeframe: TimescaleInstance) {
 			batch(() => {
-				creation.setFieldValue(
+				createTaskForm.setFieldValue(
 					"timescale",
 					timescaleTypeOf(timeframe.timescale),
 				);
-				creation.setFieldMeta("timescale", (prev) => ({
+				createTaskForm.setFieldMeta("timescale", (prev) => ({
 					...prev,
 					isTouched: true,
 					isDirty: true,
 				}));
-				creation.setFieldValue(
+				createTaskForm.setFieldValue(
 					"timeframe_start",
 					timeframe.start.toInstant().epochMilliseconds,
 				);
-				creation.setFieldMeta("timeframe_start", (prev) => ({
+				createTaskForm.setFieldMeta("timeframe_start", (prev) => ({
 					...prev,
 					isTouched: true,
 					isDirty: true,
@@ -106,9 +107,19 @@ function currentTaskValue() {
 				setShown("new_task");
 			});
 		},
+		createChildTask() {
+			const shownNow = untrack(() => shown());
+			if (shownNow !== "editing") {
+				return;
+			}
+			batch(() => {
+				createTaskForm.setFieldValue("parent_id", editForm.getFieldValue("id"));
+				setShown("new_task");
+			});
+		},
 		resetNewTask() {
-			creation.reset({
-				...creation.state.values,
+			createTaskForm.reset({
+				...createTaskForm.state.values,
 				name: "",
 				comments: "",
 				optimistic: 0.5,
@@ -125,13 +136,13 @@ function currentTaskValue() {
 			});
 		},
 		deleteTask() {
-			tasksCollection.delete(edit.state.values.id.toString());
+			tasksCollection.delete(editForm.state.values.id.toString());
 			showToast({
-				title: `Task deleted: ${edit.state.values.name}`,
+				title: `Task deleted: ${editForm.state.values.name}`,
 				variant: "success",
 				duration: 3000,
 			});
-			edit.reset();
+			editForm.reset();
 			setShown("none");
 		},
 		moveTask(

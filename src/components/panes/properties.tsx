@@ -93,6 +93,9 @@ function StatusTypeText(props: { type: StatusType }) {
 function FormFields(props: {
 	form: CurrentTaskValue["forms"][keyof CurrentTaskValue["forms"]];
 }) {
+	const currentTaskCtx = useContext(CurrentTaskContext);
+	if (!currentTaskCtx)
+		throw new Error("FormFields is not under CurrentTaskContext");
 	const parentOptions = useLiveQuery((q) => q.from({ tasks: tasksCollection }));
 	const form = props.form;
 	return (
@@ -311,7 +314,9 @@ function FormFields(props: {
 										)}
 									/>
 								</div>
-								<Button class="w-fit">Create child</Button>
+								<Button class="w-fit" onClick={currentTaskCtx.createChildTask}>
+									Create child
+								</Button>
 							</TabsContent>
 						</Tabs>
 					</div>
