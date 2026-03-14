@@ -472,7 +472,7 @@ export function Properties(props: { class?: string }) {
 			class={cn("bg-background rounded-md border border-border", props.class)}
 		>
 			<Switch>
-				<Match when={taskCtx.shown() === "new_child"}>
+				<Match when={taskCtx.shown() === "new_task"}>
 					<Form
 						title="Creating task..."
 						actionTitle="Create"
@@ -485,7 +485,7 @@ export function Properties(props: { class?: string }) {
 						closeAction={handleClose}
 					/>
 				</Match>
-				<Match when={taskCtx.shown() === "selected"}>
+				<Match when={taskCtx.shown() === "editing"}>
 					<Form
 						title="Editing task..."
 						actionTitle="Save"

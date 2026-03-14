@@ -23,7 +23,7 @@ import type { task } from "src/lib/trailbase";
 import { generateID } from "src/lib/utils";
 
 function currentTaskValue() {
-	const [shown, setShown] = createSignal<"selected" | "new_child" | "none">(
+	const [shown, setShown] = createSignal<"editing" | "new_task" | "none">(
 		"none",
 	);
 
@@ -80,7 +80,7 @@ function currentTaskValue() {
 			if (!task) throw new Error("taskId is invalid");
 			batch(() => {
 				edit.reset(task);
-				setShown("selected");
+				setShown("editing");
 			});
 		},
 		newTaskAt(timeframe: TimescaleInstance) {
@@ -103,7 +103,7 @@ function currentTaskValue() {
 					isTouched: true,
 					isDirty: true,
 				}));
-				setShown("new_child");
+				setShown("new_task");
 			});
 		},
 		resetNewTask() {

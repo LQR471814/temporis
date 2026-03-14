@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
 					>
 						<For each={table.getRowModel().rows}>
 							{(row) => (
-								<TableRow data-state={row.getIsSelected() && "selected"}>
+								<TableRow data-state={row.getIsSelected() && "editing"}>
 									<For each={row.getVisibleCells()}>
 										{(cell) => (
 											<TableCell>
