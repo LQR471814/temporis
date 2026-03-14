@@ -1,5 +1,4 @@
 import { TimescaleType } from "src/lib/constants";
-import { now } from "./utils";
 
 export interface Timescale {
 	name: string;
@@ -275,7 +274,7 @@ export function* childInstancesOf(
 }
 
 export function durationOf(timescale: Timescale) {
-	const instance = timescale.instance(now());
+	const instance = timescale.instance(Temporal.Now.zonedDateTimeISO());
 	return instance.end.since(instance.start);
 }
 

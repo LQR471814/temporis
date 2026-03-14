@@ -15,7 +15,7 @@ export function HorizontalControlled() {
 	return (
 		<TaskChipContext.Provider value={{ namespace: "horizontal" }}>
 			<div class="h-[100vh] overflow-y-auto" ref={scrollRef}>
-				<div class="flex-1 flex flex-col gap-1 pt-16">
+				<div class="flex-1 flex flex-col gap-1 pt-16 px-1 pb-1">
 					<For each={timescales.hierarchy}>
 						{(scale, i) => {
 							const parent = createMemo(() => {

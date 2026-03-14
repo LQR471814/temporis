@@ -1,5 +1,6 @@
 import {
 	createContext,
+	createEffect,
 	createMemo,
 	type ParentComponent,
 	useContext,
@@ -16,18 +17,33 @@ import {
 	year,
 	type TimescaleInstance,
 } from "src/lib/timescales";
-import { now } from "src/lib/utils";
 
 export function useViewTimeInstant() {
 	const ctx = useContext(ViewContext);
-	return createMemo(() => ctx?.state.viewTime ?? now());
+	return createMemo(
+		() => ctx?.state.viewTime ?? Temporal.Now.zonedDateTimeISO(),
+	);
 }
 
 function viewValue() {
 	const [state, setState] = createStore({
-		viewTime: now(),
+		viewTime: Temporal.Now.zonedDateTimeISO(),
 		percentile: 90,
 	});
+
+	let lastUpdateTime = Temporal.Now.zonedDateTimeISO();
+	createEffect(() => {
+		const id = setInterval(() => {
+			const duration = Temporal.Now.zonedDateTimeISO().since(lastUpdateTime);
+			setState((prev) => ({
+				...prev,
+				viewTime: prev.viewTime.add(duration),
+			}));
+			lastUpdateTime = Temporal.Now.zonedDateTimeISO();
+		}, 60 * 1000);
+		return () => clearInterval(id);
+	});
+
 	return {
 		state,
 		setViewPortion(instance: TimescaleInstance) {
@@ -84,6 +100,7 @@ function viewValue() {
 				if (nextTime.equals(prevTime)) {
 					return prev;
 				}
+				lastUpdateTime = nextTime;
 				return { ...prev, viewTime: nextTime };
 			});
 		},
@@ -91,7 +108,10 @@ function viewValue() {
 			setState((prev) => ({ ...prev, percentile }));
 		},
 		reset() {
-			setState((prev) => ({ ...prev, viewTime: now() }));
+			setState((prev) => ({
+				...prev,
+				viewTime: Temporal.Now.zonedDateTimeISO(),
+			}));
 		},
 	};
 }
