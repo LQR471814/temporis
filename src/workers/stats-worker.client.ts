@@ -3,55 +3,6 @@ import { ImplementationType } from "src/lib/constants";
 import type { Task } from "src/lib/stats";
 import type { Action, Request } from "./stats-worker";
 
-const worker = new Worker(new URL("./stats-worker.ts", import.meta.url), {
-	type: "module",
-});
-
-const pending: {
-	id: string;
-	resolve: (n: number) => void;
-	reject: (err: Error) => void;
-}[] = [];
-
-worker.onmessage = (e) => {
-	if ("error" in e.data) {
-		const data = e.data as { id: string; error: Error };
-		for (let i = 0; i < pending.length; i++) {
-			const { id, reject } = pending[i];
-			if (id === data.id) {
-				pending.splice(i, 1);
-				reject(data.error);
-				return;
-			}
-		}
-		return;
-	}
-	const data = e.data as { id: string; value: number };
-	for (let i = 0; i < pending.length; i++) {
-		const { id, resolve } = pending[i];
-		if (id === data.id) {
-			pending.splice(i, 1);
-			resolve(data.value);
-			return;
-		}
-	}
-};
-
-export function evalStats(taskIds: string[], action: Action) {
-	const tasks: Task[] = [];
-	getTaskBFS(tasks, taskIds);
-
-	const reqId = taskIds.join(",");
-	return new Promise<number>((res, rej) => {
-		pending.push({
-			id: reqId,
-			resolve: res,
-			reject: rej,
-		});
-		worker.postMessage({ id: reqId, action, tasks } satisfies Request);
-	});
-}
-
 function getTaskBFS(result: Task[], ids: string[]) {
 	const queue: string[] = [...ids];
 	if (ids.length > 1) {
@@ -77,16 +28,16 @@ function getTaskBFS(result: Task[], ids: string[]) {
 			pert:
 				task.implementation === ImplementationType.hours
 					? {
-							pessimistic: task.pessimistic,
-							expected: task.expected,
-							optimistic: task.optimistic,
-						}
+						pessimistic: task.pessimistic,
+						expected: task.expected,
+						optimistic: task.optimistic,
+					}
 					: // convert percentage to proportion
-						{
-							pessimistic: task.pessimistic / 100,
-							expected: task.expected / 100,
-							optimistic: task.optimistic / 100,
-						},
+					{
+						pessimistic: task.pessimistic / 100,
+						expected: task.expected / 100,
+						optimistic: task.optimistic / 100,
+					},
 			children: [],
 		};
 		for (const [, row] of tasksCollection.entries()) {
@@ -116,4 +67,128 @@ function getTaskBFS(result: Task[], ids: string[]) {
 		}
 		result.push(resultTask);
 	}
+}
+
+class RequestQueue {
+	pending: Map<
+		string,
+		{
+			resolve: (n: number) => void;
+			reject: (err: Error) => void;
+		}
+	>;
+	queue: {
+		id: string;
+		action: Action;
+		tasks: Task[];
+	}[];
+
+	constructor() {
+		this.pending = new Map();
+		this.queue = [];
+	}
+
+	push(taskIds: string[], action: Action): Promise<number> {
+		const tasks: Task[] = [];
+		getTaskBFS(tasks, taskIds);
+
+		const reqId = taskIds.join(",");
+
+		this.queue.push({
+			id: reqId,
+			action,
+			tasks,
+		});
+		return new Promise<number>((res, rej) => {
+			this.pending.set(reqId, {
+				resolve: res,
+				reject: rej,
+			});
+		});
+	}
+
+	pop(): Request | undefined {
+		if (this.queue.length === 0) {
+			return;
+		}
+		return this.queue.splice(0, 1)[0];
+	}
+
+	resolve(id: string, result: number) {
+		const value = this.pending.get(id);
+		if (!value) {
+			throw new Error(`unknown id: ${id}`);
+		}
+		value.resolve(result);
+	}
+
+	reject(id: string, err: Error) {
+		const value = this.pending.get(id);
+		if (!value) {
+			throw new Error(`unknown id: ${id}`);
+		}
+		value.reject(err);
+	}
+}
+
+class WorkerConnection {
+	webworker: Worker;
+	queue: RequestQueue;
+
+	constructor(queue: RequestQueue) {
+		this.queue = queue;
+		this.webworker = new Worker(new URL("./stats-worker.ts", import.meta.url), {
+			type: "module",
+		});
+		this.webworker.onmessage = (e) => {
+			if ("error" in e.data) {
+				const data = e.data as { id: string; error: Error };
+				this.queue.reject(data.id, data.error);
+				return;
+			}
+			const data = e.data as { id: string; value: number };
+			this.queue.resolve(data.id, data.value);
+		};
+	}
+
+	runFromQueue() {
+		const req = this.queue.pop();
+		if (!req) {
+			return;
+		}
+		this.webworker.postMessage(req);
+	}
+}
+
+// simple round-robin load balancing
+class WorkerPool {
+	workers: WorkerConnection[];
+	queue: RequestQueue;
+	cursor: number;
+
+	constructor(size: number) {
+		this.queue = new RequestQueue();
+		this.workers = [];
+		for (let i = 0; i < size; i++) {
+			this.workers.push(new WorkerConnection(this.queue));
+		}
+		this.cursor = 0;
+	}
+
+	evalStats(taskIds: string[], action: Action) {
+		const promise = this.queue.push(taskIds, action);
+		const target = this.workers[this.cursor];
+		target.runFromQueue();
+		this.cursor++;
+		if (this.cursor >= this.workers.length) {
+			this.cursor = 0;
+		}
+		return promise;
+	}
+}
+
+const pool = new WorkerPool(4);
+
+export function evalStats(taskIds: string[], action: Action) {
+	return pool.evalStats(taskIds, action);
 }
