@@ -75,7 +75,7 @@ function currentTaskValue() {
 		closeProperties() {
 			setShown("none");
 		},
-		selectTask(taskId: string) {
+		viewTask(taskId: string) {
 			const task = tasksCollection.get(taskId.toString());
 			if (!task) throw new Error("taskId is invalid");
 			batch(() => {
@@ -83,7 +83,7 @@ function currentTaskValue() {
 				setShown("selected");
 			});
 		},
-		newChildAt(timeframe: TimescaleInstance) {
+		newTaskAt(timeframe: TimescaleInstance) {
 			batch(() => {
 				creation.setFieldValue(
 					"timescale",
@@ -106,7 +106,7 @@ function currentTaskValue() {
 				setShown("new_child");
 			});
 		},
-		resetNewChild() {
+		resetNewTask() {
 			creation.reset({
 				...creation.state.values,
 				name: "",
@@ -134,7 +134,7 @@ function currentTaskValue() {
 			edit.reset();
 			setShown("none");
 		},
-		move(
+		moveTask(
 			id: string,
 			newTimeframeStart: Temporal.ZonedDateTime,
 			newTimescale: TimescaleType,
@@ -186,13 +186,13 @@ export const CurrentTaskProvider: ParentComponent = (props) => {
 				}
 				const dragData = e.draggable.data as DragData;
 				const dropData = e.droppable.data as DroppableData;
-				value.move(
+				value.moveTask(
 					dragData.taskId,
 					dropData.timeframeStart(),
 					timescaleTypeOf(dropData.timescale()),
 				);
 				if (value.forms.edit.state.values.id === dragData.taskId) {
-					value.selectTask(dragData.taskId);
+					value.viewTask(dragData.taskId);
 				}
 			}}
 		>

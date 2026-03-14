@@ -137,14 +137,14 @@ export function Timeframe(props: {
 				scrollerCtx.persistScroll(() => viewCtx?.setViewPortion(instance()));
 			}}
 			onCreateAction={() => {
-				scrollerCtx.persistScroll(() => currentTaskCtx?.newChildAt(instance()));
+				scrollerCtx.persistScroll(() => currentTaskCtx?.newTaskAt(instance()));
 			}}
 			tasks={shownTasks().map((t) => ({
 				id: t.id,
 				name: t.name,
 				status: t.status,
 				onClick: () => {
-					scrollerCtx.persistScroll(() => currentTaskCtx?.selectTask(t.id));
+					scrollerCtx.persistScroll(() => currentTaskCtx?.viewTask(t.id));
 				},
 				onClickStatus: () => {
 					scrollerCtx.persistScroll(() =>
