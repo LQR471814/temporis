@@ -121,6 +121,7 @@ function currentTaskValue() {
 		resetNewTask() {
 			createTaskForm.reset({
 				...createTaskForm.state.values,
+				status: StatusType.pending,
 				name: "",
 				comments: "",
 				optimistic: 0.5,
