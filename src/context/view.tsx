@@ -17,6 +17,7 @@ import {
 	year,
 	type TimescaleInstance,
 } from "src/lib/timescales";
+import { ScrollerContext } from "./scroller";
 
 export function useViewTimeInstant() {
 	const ctx = useContext(ViewContext);
@@ -26,6 +27,9 @@ export function useViewTimeInstant() {
 }
 
 function viewValue() {
+	const scrollerCtx = useContext(ScrollerContext);
+	if (!scrollerCtx) throw new Error("ViewContext is not under ScrollerContext");
+
 	const [state, setState] = createStore({
 		viewTime: Temporal.Now.zonedDateTimeISO(),
 		percentile: 90,
@@ -35,10 +39,12 @@ function viewValue() {
 	createEffect(() => {
 		const id = setInterval(() => {
 			const duration = Temporal.Now.zonedDateTimeISO().since(lastUpdateTime);
-			setState((prev) => ({
-				...prev,
-				viewTime: prev.viewTime.add(duration),
-			}));
+			scrollerCtx.persistScroll(() => {
+				setState((prev) => ({
+					...prev,
+					viewTime: prev.viewTime.add(duration),
+				}));
+			});
 			lastUpdateTime = Temporal.Now.zonedDateTimeISO();
 		}, 60 * 1000);
 		return () => clearInterval(id);

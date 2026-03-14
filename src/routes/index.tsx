@@ -12,16 +12,16 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
 	return (
-		<ViewProvider>
-			<CurrentTaskProvider>
-				<ScrollerProvider>
+		<ScrollerProvider>
+			<ViewProvider>
+				<CurrentTaskProvider>
 					<ScrollerContainer class="h-[100vh]">
 						<HorizontalControlled />
 					</ScrollerContainer>
 					<Properties class="fixed z-40 top-3 left-3" />
 					<ViewController class="fixed z-40 top-3 right-3" />
-				</ScrollerProvider>
-			</CurrentTaskProvider>
-		</ViewProvider>
+				</CurrentTaskProvider>
+			</ViewProvider>
+		</ScrollerProvider>
 	);
 }

@@ -217,7 +217,10 @@ function Display(props: {
 				<Button
 					class="px-1 py-0 h-min aspect-square text-primary/30"
 					variant="ghost"
-					onClick={props.onCreateAction}
+					onClick={(e) => {
+						e.stopPropagation();
+						props.onCreateAction();
+					}}
 				>
 					＋
 				</Button>
